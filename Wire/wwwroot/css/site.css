@@ -1,0 +1,36 @@
+﻿.siteIconNav{
+    width:50px;
+}
+
+.siteIcon {
+    width: 70px;
+}
+
+.HomePage-Container {
+    height: 90vh;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none; 
+}
+
+.HomePage-Container::-webkit-scrollbar {
+    display: none;
+}
+
+.SignUp-Container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.SignUp-Container::-webkit-scrollbar {
+    display: none;
+}
+
+.SignIn-Container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.SignIn-Container::-webkit-scrollbar {
+     display: none;
+}
