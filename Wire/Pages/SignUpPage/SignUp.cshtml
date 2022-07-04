@@ -9,7 +9,7 @@
                          class="img-fluid rounded shadow" alt="Phone image">
                 </div>
                 <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-                    <form>
+                    <form class="needs-validation" novalidate method="post">
 
                         <p class="text-center h1 p-4">
                             <i class="bi bi-person-plus-fill"></i> Sign Up
@@ -17,26 +17,42 @@
 
                         <!-- User Name input -->
                         <div class="form-outline mb-4">
-                            <input type="email" id="form1Example13" class="form-control form-control-lg" />
+                            <input type="text" id="form1Example13" class="form-control form-control-lg" asp-for="UserName" required />
                             <label class="form-label" for="form1Example13"><i class="bi bi-pen-fill p-2"></i>Your name</label>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <span asp-validation-for="UserName" class="text-danger h6 font-weight-bold"></span>
                         </div>
 
                         <!-- Email input -->
                         <div class="form-outline mb-4">
-                            <input type="email" id="form1Example13" class="form-control form-control-lg" />
+                            <input type="email" id="form1Example13" class="form-control form-control-lg" asp-for="Email" required/>
                             <label class="form-label" for="form1Example13"><i class="bi bi-envelope-fill p-2"></i>Email address</label>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger h6 font-weight-bold"></span>
                         </div>
 
                         <!-- Password input -->
                         <div class="form-outline mb-4">
-                            <input type="password" id="form1Example23" class="form-control form-control-lg" />
+                            <input type="password" id="form1Example23" class="form-control form-control-lg" asp-for="Password" required/>
                             <label class="form-label" for="form1Example23"><i class="bi bi-key p-2"></i>Password</label>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger h5 font-weight-bold"></span>
                         </div>
 
                         <!-- Confirm Password input -->
                         <div class="form-outline mb-4">
-                            <input type="password" id="form1Example23" class="form-control form-control-lg" />
+                            <input type="password" id="form1Example23" class="form-control form-control-lg" asp-for="ConfirmPassword" required/>
                             <label class="form-label" for="form1Example23"><i class="bi bi-key-fill p-2"></i>Confirm Password</label>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger h5 font-weight-bold"></span>
                         </div>
 
                         <button type="submit" class="btn btn-dark btn-lg btn-block">Sign up</button>
@@ -46,3 +62,29 @@
             </div>
         </div>
     </section>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        (() => {
+            'use strict'
+
+            // Fetch the form with {.needs-validation}-id to apply custom Bootstrap validation styles
+            const form = document.querySelectorAll('.needs-validation')
+
+            Array.from(form).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    });
+
+</script>

@@ -34,3 +34,45 @@
 .SignIn-Container::-webkit-scrollbar {
      display: none;
 }
+
+.HomePage-Container {
+    height: 91.5vh;
+}
+
+.HomePage-SideMenu {
+    height: 40vh;
+    overflow-y: scroll;
+    overflow: hidden;
+    background-color: rgb(62, 57, 57);
+}
+
+@media only screen and (width <= 36em) {
+    .HomePage-SideMenu {
+        height:80%;
+    }
+
+    .HomePage-SideMenu-Container {
+        height:15vh;
+    }
+}
+
+.HomePage-UserProfile{
+    height:50vh;
+    background-color:rgb(41, 35, 35);
+}
+
+.AddFriendWindow-Container {
+    display:none;
+    position: absolute;
+    top: 20vh;
+    left: 30vw;
+    width: 40vw;
+    height: 10vh;
+    border-radius:10px;
+    z-index:1;
+}
+
+.AddFriendWindow {
+    width: 30vw;
+    height: 10vh;
+}

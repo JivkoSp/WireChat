@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Westwind.AspNetCore.LiveReload;
+using Wire.Data;
+using Wire.Models;
 
 namespace Wire
 {
@@ -25,6 +29,30 @@ namespace Wire
             services.AddRazorPages();
             services.AddControllersWithViews();
             services.AddLiveReload();
+
+            services.AddDbContext<WireChatDbContext>(builder => {
+
+                builder.UseSqlServer(Configuration.GetConnectionString("WireChatDbConnection"));
+            });
+
+            services.AddIdentity<AppUser, IdentityRole>(opt => {
+
+                opt.Password.RequiredLength = 4;
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.SignIn.RequireConfirmedAccount = true;
+
+            }).AddEntityFrameworkStores<WireChatDbContext>();
+
+            services.ConfigureApplicationCookie(opt => {
+
+                opt.Cookie.Name = "UserAuthCookie";
+                opt.LoginPath = "/SignInPage/SignIn";
+                opt.SlidingExpiration = true;
+                opt.ExpireTimeSpan = TimeSpan.FromMinutes(120);
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,8 +68,9 @@ namespace Wire
 
             app.UseLiveReload();
             app.UseStaticFiles();
+            app.UseAuthentication();
             app.UseRouting();
-
+            app.UseAuthorization();
             
             app.UseEndpoints(endpoints =>
             {
