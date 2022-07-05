@@ -7,7 +7,7 @@
 }
 
 .HomePage-Container {
-    height: 90vh;
+    height: 91vh;
     overflow-y: auto;
     -ms-overflow-style: none;
     scrollbar-width: none; 
@@ -35,15 +35,14 @@
      display: none;
 }
 
-.HomePage-Container {
-    height: 91.5vh;
+.HomePage-SideMenu-Container{
+    height:91vh;
 }
 
 .HomePage-SideMenu {
     height: 40vh;
     overflow-y: scroll;
     overflow: hidden;
-    background-color: rgb(62, 57, 57);
 }
 
 @media only screen and (width <= 36em) {
@@ -57,7 +56,7 @@
 }
 
 .HomePage-UserProfile{
-    height:50vh;
+    height:44.5vh;
     background-color:rgb(41, 35, 35);
 }
 
@@ -75,4 +74,8 @@
 .AddFriendWindow {
     width: 30vw;
     height: 10vh;
+}
+
+.PendingList-Container{
+    height:91vh;
 }

@@ -1,0 +1,111 @@
+﻿@model List<PendingRequest>
+
+<section class="container-fluid">
+    <div id="HomePage-Container" class="row HomePage-Container">
+        <partial name="SideMenuPartial" />
+        <div class="col text-white bg-dark border-top border-right border-info PendingList-Container overflow-auto">
+            <div id="PendingReqList" class="list-group">
+                @foreach (var pendingRequest in Model)
+                {
+                <div class="list-group-item list-group-item-dark w-75 m-auto mt-2">
+                    <input id="SenderId" type="hidden" value="@pendingRequest.SenderId" />
+                    <input id="ReceiverId" type="hidden" value="@pendingRequest.ReceiverId" />
+                    <input id="ChatType" type="hidden" value="@pendingRequest.ChatType" />
+                    <span class="text-dark h6 pr-5">
+                        Sender: Name
+                    </span>
+                    <p class="h5 font-weight-bold d-inline-block p-1 pt-2 ml-5 w-25 text-center">
+                        @pendingRequest.ChatType chat
+                    </p>
+                    <button id="DeclineBtn" class="btn bg-warning float-right p-2 ml-1">Decline</button>
+                    <button id="AcceptBtn" class="btn bg-info float-right p-2 ml-1">Accept</button>
+                </div>
+                }
+            </div>         
+        </div>
+        <partial name="ActivityMenuPartial" />
+    </div>
+</section>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub").build();
+
+        connection.start().then(() => {
+
+            connection.on("PendingRequestReceived", (message) => {
+
+                console.log(message);
+
+                var liElement = document.createElement("div");
+                liElement.setAttribute("class", "list-group-item list-group-item-warning w-75 m-auto mt-2");
+
+                var span = document.createElement("span");
+                span.textContent = "Sender: Name";
+                span.setAttribute("class", "text-primary h6 pr-5");
+
+                var p = document.createElement("p");
+                p.textContent = message.chatType+" chat";
+                p.setAttribute("class", "h5 font-weight-bold d-inline-block p-1 pt-2 ml-5 w-25 text-center");
+
+                var AcceptBtn = document.createElement("button");
+                AcceptBtn.textContent = "Decline";
+                AcceptBtn.setAttribute("class", "btn bg-warning float-right p-2 ml-1");
+                AcceptBtn.setAttribute("id", "AcceptBtn");
+
+                var DeclineBtn = document.createElement("button");
+                DeclineBtn.textContent = "Accept";
+                DeclineBtn.setAttribute("class", "btn bg-info float-right p-2 ml-1");
+                DeclineBtn.setAttribute("id", "DeclineBtn");
+
+                liElement.appendChild(span);
+                liElement.appendChild(p);
+                liElement.appendChild(AcceptBtn);
+                liElement.appendChild(DeclineBtn);
+
+                document.getElementById("PendingReqList").appendChild(liElement);
+            });
+
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        $('body').on('click', 'button#AcceptBtn', () => {
+
+            if (document.getElementById("ChatType").value == "Private") {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Chat/CreatePrivateChat',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN", $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    data: {
+                        "senderId": document.getElementById("SenderId").value,
+                        "receiverId": document.getElementById("ReceiverId").value
+                    },
+                    success: () => {
+                        console.log("request accepted");
+                    },
+                    fail: (response) => { console.log(response); },
+                    error: (response) => { console.log(response); }
+                });
+            }
+            else {
+
+            }
+
+        });
+
+        $('body').on('click', 'button#DeclineBtn', () => {
+
+            console.log("decline");
+        });
+
+    });
+
+</script>

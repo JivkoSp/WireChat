@@ -8,9 +8,10 @@ namespace Wire.Controllers
 {
     public class ChatController : Controller
     {
-        public IActionResult Index()
+        [HttpPost]
+        public void CreatePrivateChat(string senderId, string receiverId)
         {
-            return View();
+            
         }
     }
 }

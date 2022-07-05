@@ -11,6 +11,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Westwind.AspNetCore.LiveReload;
 using Wire.Data;
+using Wire.ExtensionMethods;
+using Wire.Hubs;
 using Wire.Models;
 
 namespace Wire
@@ -53,6 +55,10 @@ namespace Wire
                 opt.SlidingExpiration = true;
                 opt.ExpireTimeSpan = TimeSpan.FromMinutes(120);
             });
+
+            services.AddRepository();
+            services.AddSignalR(opt => opt.EnableDetailedErrors = true);
+            services.AddAntiforgery(config => config.HeaderName = "XSRF-TOKEN");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -71,11 +77,12 @@ namespace Wire
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
         }
     }
