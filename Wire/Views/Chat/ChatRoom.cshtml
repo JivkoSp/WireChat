@@ -1,0 +1,180 @@
+﻿@model List<Message>
+
+<div class="container-fluid border-top border-info">
+
+    <div class="content-wrapper">
+        <div class="row gutters bg-dark">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="card m-0">
+                    <div class="row no-gutters">
+
+                        <vc:side-menu />
+
+                        <div class="col-xl-10 col-lg-10 col-md-9 col-sm-8 col-8 bg-dark">
+                            <div class="selected-user text-white">
+                                <span>To: <span class="name">Emily Russell</span></span>
+                            </div>
+                            <div class="chat-container">
+                                <ul id="ChatBody" style="max-height:67vh; width:98%; overflow-y:auto; overflow-x:hidden;" 
+                                    class="chat-box chatContainerScroll mt-1 m-auto">
+                                    @foreach (var message in Model)
+                                    {
+                                        @if (message.Publisher == ViewContext.HttpContext.User.Identity.Name)
+                                        {
+                                            <li class="chat-left">
+                                                <div class="chat-avatar">
+                                                    <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="privateChat">
+                                                    <div class="chat-name text-warning">
+                                                         @message.Publisher
+                                                        <p style="color:rgb(201, 181, 181);">@message.DateTime.ToString("h:mm tt")</p>
+                                                    </div>
+                                                </div>
+                                                <div class="chat-text mr-2">
+                                                    @message.Content
+                                                </div>
+                                                <div class="chat-hour mr-2"><span class="fa fa-check-circle"></span></div>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="chat-right">
+                                                <div class="chat-hour ml-2"><span class="fa fa-check-circle"></span></div>
+                                                <div class="chat-text ml-2">
+                                                    @message.Content
+                                                </div>
+                                                <div class="chat-avatar">
+                                                    <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="privateChat">
+                                                    <div class="chat-name text-warning">
+                                                        @message.Publisher
+                                                        <p style="color:rgb(201, 181, 181);">@message.DateTime.ToString("h:mm tt")</p>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                                <div class="col col-xl-7 col-lg-9 col-sm-12 col-12 form-group mt-5 mb-0 m-auto">
+                                    <div class="input-group mb-3">
+                                        <input id="Message" type="text" class="form-control" placeholder="Write a message" 
+                                               aria-describedby="SendMessageBtn">
+                                        <button id="SendMessageBtn" class="btn btn-outline-info" type="button">Button</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub").build();
+
+        connection.start().then(() => {
+
+            try {
+                 connection.invoke("JoinGroup", "@ViewContext.HttpContext.Request.Query["ChatId"]");
+            } catch (err) {
+                console.error(err);
+            }
+
+            document.getElementById("SendMessageBtn").addEventListener('click', () => {
+
+                try {
+                    let message = document.getElementById("Message").value;
+
+                    let messageDto = {
+                        "Publisher": "@ViewContext.HttpContext.User.Identity.Name",
+                        "Message": message
+                    };
+
+                    connection.invoke("SendMessageToGroup", "@ViewContext.HttpContext.Request.Query["ChatId"]", messageDto);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Chat/PostMessage',
+                        data: {
+                            "chatId": @ViewContext.HttpContext.Request.Query["ChatId"],
+                            "message": message
+                        },
+                        failure: function (response) {
+                            console.log("Fail", response);
+                        },
+                        error: function (response) {
+                            console.log("Error", response);
+                        }
+                    });
+
+                } catch (err) {
+                    console.error(err);
+              }
+            });
+
+            connection.on("SendMessageToGroup", (message) => {
+
+                console.log("received =>", message);
+
+                let liElement = document.createElement("li");
+
+                if ("@ViewContext.HttpContext.User.Identity.Name" == message.publisher) {
+                    liElement.setAttribute("class", "chat-left");
+                }
+                else {
+                    liElement.setAttribute("class", "chat-right");
+                }
+
+                let chatAvatar = document.createElement("div");
+                chatAvatar.setAttribute("class", "chat-avatar");
+
+                let imgElement = document.createElement("img");
+                imgElement.setAttribute("src", "https://www.bootdey.com/img/Content/avatar/avatar3.png");
+                imgElement.setAttribute("alt", "privateChat");
+
+                let chatName = document.createElement("div");
+                chatName.setAttribute("class", "chat-name text-warning");
+                chatName.textContent = message.publisher;
+
+                let pElement = document.createElement("p");
+                pElement.style.color = "rgb(201, 181, 181)";
+                pElement.textContent = message.dateTime;
+
+                chatName.appendChild(pElement);
+                chatAvatar.appendChild(imgElement);
+                chatAvatar.appendChild(chatName);
+
+                let chatText = document.createElement("div");
+                chatText.setAttribute("class", "chat-text");
+                chatText.textContent = message.message;
+
+                let chatHour = document.createElement("div");
+                chatHour.setAttribute("class", "chat-hour");
+
+                let spanElement = document.createElement("span");
+                spanElement.setAttribute("class", "fa fa-check-circle");
+
+                chatHour.appendChild(spanElement);
+
+                liElement.appendChild(chatAvatar);
+                liElement.appendChild(chatText);
+                liElement.appendChild(chatHour);
+
+                console.log(liElement);
+
+                document.getElementById("ChatBody").appendChild(liElement);
+                liElement.scrollIntoView({ behavior: "smooth" });
+            });
+
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+    });
+
+</script>

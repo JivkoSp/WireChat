@@ -1,0 +1,85 @@
+﻿@model List<UserChat> 
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-4 bg-light">
+    <div class="users-container">
+        <div class="chat-search-box mb-3">
+            <div class="input-group">
+                <input class="form-control" placeholder="Search">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-primary">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <ul id="FriendList" style="height:60vh;" class="users overflow-auto">
+            @foreach (var friend in Model)
+            {
+                <li class="person" data-chat="person1">
+                    <a asp-controller="Chat" asp-action="ChatRoom" asp-route-ChatId="@friend.ChatId" class="user">
+                        <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="Retail Admin">
+                        <span class="status busy bg-warning"></span>
+                    </a>
+                    <p class="name-time">
+                        <span class="name">@friend.AppUser.UserName</span>
+                        <span class="time font text-dark"></span>
+                    </p>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub").build();
+
+        connection.start().then(() => {
+
+            connection.on("AddToPrivateChat", (user, message) => {
+
+                let liElement = document.createElement("li");
+                liElement.setAttribute("class", "person");
+
+                let divElement = document.createElement("div");
+                divElement.setAttribute("class", "user");
+
+                let imgElement = document.createElement("img");
+                imgElement.setAttribute("src", "https://www.bootdey.com/img/Content/avatar/avatar3.png");
+                imgElement.setAttribute("alt", "Retail Admin");
+
+                let spanElement = document.createElement("span");
+                spanElement.setAttribute("class", "status busy");
+
+                divElement.appendChild(imgElement);
+                divElement.appendChild(spanElement);
+
+                let pElement = document.createElement("p");
+                pElement.setAttribute("class", "name-time");
+
+                let spanUserNameElement = document.createElement("span");
+                spanUserNameElement.setAttribute("class", "name");
+
+                let spanJoinDateElement = document.createElement("span");
+                spanJoinDateElement.setAttribute("class", "time font text-dark");
+
+                pElement.appendChild(spanUserNameElement);
+                pElement.appendChild(spanJoinDateElement);
+
+                liElement.appendChild(divElement);
+                liElement.appendChild(pElement);
+
+                document.getElementById("FriendList").appendChild(liElement);
+            });
+
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+    });
+</script>

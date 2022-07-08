@@ -15,6 +15,11 @@ namespace Wire.ExtensionMethods
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAppUserRepo, AppUserRepo>();
             services.AddScoped<IPendingRequestRepo, PendingRequestRepo>();
+            services.AddScoped<IFriendRepo, FriendRepo>();
+            services.AddScoped<IChatTypeRepo, ChatTypeRepo>();
+            services.AddScoped<IChatRepo, ChatRepo>();
+            services.AddScoped<IUserChatRepo, UserChatRepo>();
+            services.AddScoped<IMessageRepo, MessageRepo>();
         }
     }
 }

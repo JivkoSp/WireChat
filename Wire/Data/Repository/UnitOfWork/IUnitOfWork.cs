@@ -10,6 +10,11 @@ namespace Wire.Data.Repository.UnitOfWork
     {
         IAppUserRepo UserRepo { get; }
         IPendingRequestRepo PendingRequestRepo { get; }
+        IFriendRepo FriendRepo { get; }
+        IChatTypeRepo ChatTypeRepo { get; }
+        IChatRepo ChatRepo { get; }
+        IUserChatRepo UserChatRepo { get; }
+        IMessageRepo MessageRepo { get; }
         Task SaveChangesAsync();
     }
 }

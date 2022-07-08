@@ -40,6 +40,12 @@ namespace Wire.Data
                 .WithOne(prop => prop.Chat)
                 .HasForeignKey<ChatTopic>(prop => prop.ChatId)
                 .HasConstraintName("FK_Chat_ChatTopic");
+
+                builder.HasOne(prop => prop.ChatType)
+                .WithMany(prop => prop.Chats)
+                .HasForeignKey(prop => prop.ChatTypeId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_ChatType_Chats");
             });
 
             modelBuilder.Entity<ChatTopic>(builder => {
@@ -58,11 +64,6 @@ namespace Wire.Data
                 builder.Property(prop => prop.ChatName)
                 .HasMaxLength(50)
                 .IsRequired();
-
-                builder.HasOne(prop => prop.Chat)
-                .WithOne(prop => prop.ChatType)
-                .HasForeignKey<Chat>(prop => prop.ChatTypeId)
-                .HasConstraintName("FK_ChatType_Chat");
             });
 
             modelBuilder.Entity<Friend>(builder => {
@@ -79,6 +80,10 @@ namespace Wire.Data
             modelBuilder.Entity<Message>(builder => {
 
                 builder.ToTable("Message");
+
+                builder.Property(prop => prop.Publisher)
+                    .HasMaxLength(100)
+                    .IsRequired();
 
                 builder.Property(prop => prop.DateTime)
                     .HasColumnType("datetime2")
@@ -111,6 +116,10 @@ namespace Wire.Data
                 builder.ToTable("UserChat");
 
                 builder.HasKey(prop => new { prop.AppUserId, prop.ChatId });
+
+                builder.Property(prop => prop.JoinDate)
+                .HasColumnType("datetime2")
+                .IsRequired();
 
                 builder.HasOne(prop => prop.AppUser)
                 .WithMany(prop => prop.UserChats)
