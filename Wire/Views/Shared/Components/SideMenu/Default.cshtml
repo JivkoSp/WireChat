@@ -1,11 +1,11 @@
-﻿@model List<UserChat> 
+﻿@model SideMenuViewModel
 
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-<div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-4 bg-light">
+<div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2 bg-light">
     <div class="users-container">
         <div class="chat-search-box mb-3">
             <div class="input-group">
-                <input class="form-control" placeholder="Search">
+                <input class="form-control" placeholder="Search friends">
                 <div class="input-group-btn">
                     <button type="button" class="btn btn-primary">
                         <i class="fa fa-search"></i>
@@ -13,12 +13,13 @@
                 </div>
             </div>
         </div>
-        <ul id="FriendList" style="height:60vh;" class="users overflow-auto">
-            @foreach (var friend in Model)
+
+        <ul id="FriendList" style="height:67vh;" class="users overflow-auto">
+            @foreach (var friend in Model.Contacts)
             {
-                <li class="person" data-chat="person1">
+                <li class="person">
                     <a asp-controller="Chat" asp-action="ChatRoom" asp-route-ChatId="@friend.ChatId" class="user">
-                        <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="Retail Admin">
+                        <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="friend-contact">
                         <span class="status busy bg-warning"></span>
                     </a>
                     <p class="name-time">
@@ -28,8 +29,23 @@
                 </li>
             }
         </ul>
+
+        @if (Model.RoomType == "Public")
+        {
+            <div class="row">
+                <div class="col col-10 mt-3 ml-4">
+                    <i id="GroupTopicsMenu" class="bi bi-arrow-return-right float-right h5"></i>
+                </div>
+            </div>
+        }
+
     </div>
 </div>
+
+@if (Model.RoomType == "Public")
+{
+    <vc:group-side-menu chat-id="@int.Parse(ViewContext.HttpContext.Request.Query["ChatId"])" />
+}
 
 <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -47,18 +63,19 @@
                 let liElement = document.createElement("li");
                 liElement.setAttribute("class", "person");
 
-                let divElement = document.createElement("div");
-                divElement.setAttribute("class", "user");
+                let aElement = document.createElement("div");
+                aElement.setAttribute("class", "user");
+                aElement.setAttribute("href", `/Chat/ChatRoom?ChatId=${message.groupId}`);
 
                 let imgElement = document.createElement("img");
                 imgElement.setAttribute("src", "https://www.bootdey.com/img/Content/avatar/avatar3.png");
-                imgElement.setAttribute("alt", "Retail Admin");
+                imgElement.setAttribute("alt", "friend-contact");
 
                 let spanElement = document.createElement("span");
                 spanElement.setAttribute("class", "status busy");
 
-                divElement.appendChild(imgElement);
-                divElement.appendChild(spanElement);
+                aElement.appendChild(imgElement);
+                aElement.appendChild(spanElement);
 
                 let pElement = document.createElement("p");
                 pElement.setAttribute("class", "name-time");
@@ -72,7 +89,7 @@
                 pElement.appendChild(spanUserNameElement);
                 pElement.appendChild(spanJoinDateElement);
 
-                liElement.appendChild(divElement);
+                liElement.appendChild(aElement);
                 liElement.appendChild(pElement);
 
                 document.getElementById("FriendList").appendChild(liElement);
@@ -81,5 +98,22 @@
         }).catch(function (err) {
             return console.error(err.toString());
         });
+
+        $("#GroupTopicsMenu").click(() => {
+
+            let element = document.getElementById("groupTopics-container");
+
+            if (element.style.display == "none") {
+                element.style.display = "block";
+                document.getElementById("GroupTopicsMenu")
+                  .setAttribute("class", "bi bi-arrow-return-left float-right h5")
+            }
+            else {
+                element.style.display = "none";
+                document.getElementById("GroupTopicsMenu")
+                    .setAttribute("class", "bi bi-arrow-return-right float-right h5")
+            }
+        });
+
     });
 </script>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using Wire.Data.Repository.UnitOfWork;
 using Wire.Hubs;
 using Wire.Models;
 using Wire.Models.Dtos;
+using Wire.Models.ViewModels;
 
 namespace Wire.Controllers
 {
@@ -15,11 +17,14 @@ namespace Wire.Controllers
     {
         private IUnitOfWork UnitOfWork;
         private IHubContext<ChatHub> HubContext;
+        private UserManager<AppUser> UserManager;
 
-        public ChatController(IUnitOfWork unitOfWork, IHubContext<ChatHub> hubContext)
+        public ChatController(IUnitOfWork unitOfWork, IHubContext<ChatHub> hubContext,
+            UserManager<AppUser> userManager)
         {
             UnitOfWork = unitOfWork;
             HubContext = hubContext;
+            UserManager = userManager;
         }
 
         [HttpPost]
@@ -53,14 +58,14 @@ namespace Wire.Controllers
                 {
                     AppUserId = senderId,
                     ChatId = privateChat.ChatId,
-                    ChatType = "Private"
+                    JoinDate = DateTime.Now
                 };
 
                 UserChat newReceiverChat = new UserChat
                 {
                     AppUserId = receiverId,
                     ChatId = privateChat.ChatId,
-                    ChatType = "Private"
+                    JoinDate = DateTime.Now
                 };
 
                 await UnitOfWork.UserChatRepo.AddRangeAsync(new List<UserChat> { newSenderChat, newReceiverChat });
@@ -68,7 +73,7 @@ namespace Wire.Controllers
 
                 GroupDto groupDto = new GroupDto
                 {
-                    GroupId = privateChat.ChatId
+                    ChatId = privateChat.ChatId
                 };
 
                 await HubContext.Clients.User(senderId).SendAsync("AddToPrivateChat", senderId, groupDto);
@@ -80,9 +85,16 @@ namespace Wire.Controllers
             }
         }
 
-        public IActionResult ChatRoom(int ChatId)
+        public IActionResult ChatRoom(int ChatId, string roomType="Private")
         {
-            return View(UnitOfWork.MessageRepo.GetMessages(ChatId));
+            return View
+                (
+                    new ChatRoomViewModel
+                    {
+                        RoomType = roomType,
+                        Messages = UnitOfWork.MessageRepo.GetMessages(ChatId)
+                    }
+                );
         }
 
         [HttpPost]
@@ -102,6 +114,45 @@ namespace Wire.Controllers
                 await UnitOfWork.SaveChangesAsync();
             }
             catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task CreateGroup(string groupName, int groupTypeId)
+        {
+            try
+            {
+               string userId = UserManager.GetUserId(User);
+
+               UserChat userChat = new UserChat
+                {
+                    AppUserId = userId,
+                    JoinDate = DateTime.Now,
+                    Chat = new Chat
+                    {
+                        ChatTypeId = UnitOfWork.ChatTypeRepo.GetChatTypeId("Public"),
+                        Group = new Group
+                        {
+                            GroupName = groupName,
+                            GroupTypeId = groupTypeId
+                        }
+                    }
+                };
+
+                await UnitOfWork.UserChatRepo.AddAsync(userChat);
+                await UnitOfWork.SaveChangesAsync();
+
+                GroupDto groupDto = new GroupDto
+                {
+                    ChatId = userChat.Chat.ChatId,
+                    GroupName = groupName
+                };
+
+                await HubContext.Clients.User(userId).SendAsync("CreatePublicGroup", groupDto);
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }

@@ -1,0 +1,125 @@
+﻿@model GroupSideMenuViewModel
+
+
+<div id="groupTopics-container" style="display:none;" class="col-xl-1 col-lg-1 col-md-1 col-sm-2 col-2 bg-light">
+
+     <p class="text-center h6 p-2 pt-5 pb-3">Chat Topics</p>
+     
+    <ul id="ChatTopicList" style="height:67vh;" class="users overflow-auto">
+        @foreach (var topic in Model.ChatTopics)
+        {
+            <li class="person">
+                <a asp-controller="Chat" asp-action="ChatRoom" asp-route-ChatId="@topic.ChatId" class="user">
+                    <p>@topic.TopicName</p>
+                </a>
+            </li>
+        }
+    </ul>
+
+    <div class="row">
+      <div class="col col-10 mt-3 ml-2">
+          <i id="groupOptions" class="bi bi-gear h5 pl-1"></i>
+      </div>
+    </div>
+
+</div>
+
+<div id="GroupOptions" 
+     class="container position-absolute" style=" z-index:100; display: none; justify-content: center; align-items: center; height: 90vh">
+    <section class="container bg-light rounded shadow w-75">
+        <div class="row">
+            <div class="col">
+                <button id="GroupOptionsClose" type="button" class="btn-close btn-close float-right mt-1" aria-label="Close"></button>
+                <p class="text-center shadow rounded h5 w-25 m-auto">Group Options</p>
+                <div class="row">
+                    <div class="col col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <div class="input-group">
+                            <input id="FriendContact" type="text" class="form-control" placeholder="&#xF002; Search"
+                                 style="font-family:Arial, FontAwesome"  aria-describedby="JoinFriend">
+                            <button id="JoinFriend" class="btn btn-outline-info" type="button">
+                                Join Friend
+                                <i class="bi bi-person-plus-fill"></i>
+                            </button>
+                        </div>
+                        <ul style="height:40vh;" class="users mt-1 overflow-auto">
+                            @foreach (var friend in Model.Contacts)
+                            {
+                                <li class="person group-options-contacts">
+                                    <div class="user">
+                                        <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="friend-contact">
+                                    </div>
+                                    <p class="name-time">@friend.AppUser.UserName</p>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        $("#groupOptions").click(() => {
+
+            document.getElementById("GroupOptions").style.display = "flex";
+        });
+
+        $("#GroupOptionsClose").click(() => {
+
+            document.getElementById("GroupOptions").style.display = "none";
+        });
+
+        $('#FriendContact').autocomplete({
+
+            source: function (request, response) {
+                $.getJSON("/api/userSearch/friends?userId=@Model.UserId&?term=" + request.term, function (data) {
+
+                    response($.map(data, function (values) {
+                        return values;
+                    }));
+                });
+            },
+            autoFocus: true,
+            select: function (e, i) {
+                $("#search").val(i.item.val);
+            }
+        });
+
+
+        var friendContacts = document.getElementsByClassName("group-options-contacts");
+
+        for (let i = 0; i < friendContacts.length; i++) {
+            friendContacts[i].addEventListener('click', () => {
+
+                document.getElementById("FriendContact").value = friendContacts[i].querySelector('p').textContent;
+            });
+        }
+
+        $("#JoinFriend").click(() => {
+
+            $.ajax({
+                type: 'POST',
+                url: '/Chat/CreateGroup',
+                data: {
+                    "groupName": document.getElementById("GroupNameInput").value,
+                    "groupTypeId": document.getElementById("GroupType").value
+                },
+                failure: function (response) {
+                    console.log("Fail", response);
+                },
+                error: function (response) {
+                    console.log("Error", response);
+                }
+            });
+        });
+
+    });
+
+</script>

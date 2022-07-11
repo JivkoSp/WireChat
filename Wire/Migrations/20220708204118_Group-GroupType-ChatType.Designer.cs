@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Wire.Data;
 
 namespace Wire.Migrations
 {
     [DbContext(typeof(WireChatDbContext))]
-    partial class WireChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220708204118_Group-GroupType-ChatType")]
+    partial class GroupGroupTypeChatType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -299,7 +301,7 @@ namespace Wire.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ChatId")
+                    b.Property<int?>("ChatTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("GroupName")
@@ -307,13 +309,12 @@ namespace Wire.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("GroupTypeId")
+                    b.Property<int?>("GroupTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("GroupId");
 
-                    b.HasIndex("ChatId")
-                        .IsUnique();
+                    b.HasIndex("ChatTypeId");
 
                     b.HasIndex("GroupTypeId");
 
@@ -499,21 +500,19 @@ namespace Wire.Migrations
 
             modelBuilder.Entity("Wire.Models.Group", b =>
                 {
-                    b.HasOne("Wire.Models.Chat", "Chat")
-                        .WithOne("Group")
-                        .HasForeignKey("Wire.Models.Group", "ChatId")
-                        .HasConstraintName("FK_Group_Chat")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Wire.Models.ChatType", "ChatType")
+                        .WithMany("Groups")
+                        .HasForeignKey("ChatTypeId")
+                        .HasConstraintName("FK_ChatType_Groups")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Wire.Models.GroupType", "GroupType")
                         .WithMany("Groups")
                         .HasForeignKey("GroupTypeId")
                         .HasConstraintName("FK_GroupType_Groups")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("Chat");
+                    b.Navigation("ChatType");
 
                     b.Navigation("GroupType");
                 });
@@ -575,8 +574,6 @@ namespace Wire.Migrations
                 {
                     b.Navigation("ChatTopic");
 
-                    b.Navigation("Group");
-
                     b.Navigation("Messages");
 
                     b.Navigation("UserChats");
@@ -585,6 +582,8 @@ namespace Wire.Migrations
             modelBuilder.Entity("Wire.Models.ChatType", b =>
                 {
                     b.Navigation("Chats");
+
+                    b.Navigation("Groups");
                 });
 
             modelBuilder.Entity("Wire.Models.GroupType", b =>

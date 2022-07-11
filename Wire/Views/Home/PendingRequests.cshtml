@@ -2,7 +2,7 @@
 
 <section class="container-fluid">
     <div id="HomePage-Container" class="row HomePage-Container">
-        <vc:side-menu />
+        <vc:side-menu room-type=""/>
         <div class="col text-white bg-dark border-top border-right border-info PendingList-Container overflow-auto">
             <div id="PendingReqList" class="list-group">
                 @foreach (var pendingRequest in Model)
@@ -17,8 +17,14 @@
                     <p class="h5 font-weight-bold d-inline-block p-1 pt-2 ml-5 w-25 text-center">
                         @pendingRequest.ChatType chat
                     </p>
-                    <button id="DeclineBtn" class="btn bg-warning float-right p-2 ml-1">Decline</button>
-                    <button id="AcceptBtn" class="btn bg-info float-right p-2 ml-1">Accept</button>
+                    <button id="DeclineBtn" class="btn bg-warning float-right p-2 ml-1">
+                        Decline
+                        <i class="bi bi-envelope-slash-fill pl-1"></i>
+                    </button>
+                    <button id="AcceptBtn" class="btn bg-info float-right p-2 ml-1">
+                        Accept
+                        <i class="bi bi-envelope-plus-fill p-1"></i>
+                    </button>
                 </div>
                 }
             </div>         

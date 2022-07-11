@@ -444,3 +444,52 @@ ul {
     margin-bottom: 2rem;
     box-shadow: none;
 }
+
+#FriendList::-webkit-scrollbar {
+    width: 8px;
+    border-radius:10px;
+    background-color: rgb(210, 192, 192);
+}
+
+#FriendList::-webkit-scrollbar-thumb {
+    background-color: white;
+    border-radius: 10px;
+}
+
+#FriendList::-webkit-scrollbar-thumb:hover {
+    background-color: #333333;
+    border: 1px solid #333333;
+}
+
+#FriendList::-webkit-scrollbar-thumb:active {
+    background-color: black;
+    border: 1px solid #333333;
+}
+
+#ChatTopicList::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 10px;
+    background-color: rgb(210, 192, 192);
+}
+
+#ChatTopicList::-webkit-scrollbar-thumb {
+    background-color: white;
+    border-radius: 10px;
+}
+
+#ChatTopicList::-webkit-scrollbar-thumb:hover {
+        background-color: #333333;
+        border: 1px solid #333333;
+}
+
+#ChatTopicList::-webkit-scrollbar-thumb:active {
+        background-color: black;
+        border: 1px solid #333333;
+}
+
+.ui-autocomplete {
+    height: 200px;
+    border-width: 0 !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}

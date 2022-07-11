@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 
 <html>
 <head>
@@ -16,9 +17,9 @@
                 <div class="col-md-1 pl-lg-0 pl-md-0 text-lg-left text-center bg-dark">
                     <img src="~/HomeImage/siteIcon/Logo 500x500 px(2).png" class="img-fluid rounded p-1 pt-2" style="width: 50px;" alt="avatar" />
                 </div>
-                <div class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
-                    Friends
-                </div>
+                <button id="Groups" class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
+                    Groups
+                </button>
                 <div class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
                     Online
                 </div>
@@ -64,6 +65,8 @@
                 </div>
             </div>
         </section>
+
+       <vc:groups />
 
         @RenderBody()
         <script src="~/lib/jquery/dist/jquery.js"></script>

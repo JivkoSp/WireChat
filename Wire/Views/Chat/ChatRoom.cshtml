@@ -1,4 +1,4 @@
-﻿@model List<Message>
+﻿@model ChatRoomViewModel
 
 <div class="container-fluid border-top border-info">
 
@@ -8,16 +8,16 @@
                 <div class="card m-0">
                     <div class="row no-gutters">
 
-                        <vc:side-menu />
+                        <vc:side-menu room-type="@Model.RoomType"/>
 
-                        <div class="col-xl-10 col-lg-10 col-md-9 col-sm-8 col-8 bg-dark">
+                        <div class="col bg-dark">
                             <div class="selected-user text-white">
                                 <span>To: <span class="name">Emily Russell</span></span>
                             </div>
                             <div class="chat-container">
-                                <ul id="ChatBody" style="max-height:67vh; width:98%; overflow-y:auto; overflow-x:hidden;" 
+                                <ul id="ChatBody" style="max-height:67vh; min-height:67vh; width:98%; overflow-y:auto; overflow-x:hidden;"
                                     class="chat-box chatContainerScroll mt-1 m-auto">
-                                    @foreach (var message in Model)
+                                    @foreach (var message in Model.Messages)
                                     {
                                         @if (message.Publisher == ViewContext.HttpContext.User.Identity.Name)
                                         {
@@ -25,7 +25,7 @@
                                                 <div class="chat-avatar">
                                                     <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="privateChat">
                                                     <div class="chat-name text-warning">
-                                                         @message.Publisher
+                                                        @message.Publisher
                                                         <p style="color:rgb(201, 181, 181);">@message.DateTime.ToString("h:mm tt")</p>
                                                     </div>
                                                 </div>
@@ -55,9 +55,12 @@
                                 </ul>
                                 <div class="col col-xl-7 col-lg-9 col-sm-12 col-12 form-group mt-5 mb-0 m-auto">
                                     <div class="input-group mb-3">
-                                        <input id="Message" type="text" class="form-control" placeholder="Write a message" 
+                                        <input id="Message" type="text" class="form-control" placeholder="Write a message"
                                                aria-describedby="SendMessageBtn">
-                                        <button id="SendMessageBtn" class="btn btn-outline-info" type="button">Button</button>
+                                        <button id="SendMessageBtn" class="btn btn-outline-info" type="button">
+                                            Send
+                                            <i class="bi bi-cursor-fill"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -119,8 +122,6 @@
             });
 
             connection.on("SendMessageToGroup", (message) => {
-
-                console.log("received =>", message);
 
                 let liElement = document.createElement("li");
 

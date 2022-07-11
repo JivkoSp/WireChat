@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 
 namespace Wire.Models
 {
-    public class UserChat
+    public class Group
     {
-        public string AppUserId { get; set; }
+        public int GroupId { get; set; }
+        public string GroupName { get; set; }
+
+        public int GroupTypeId { get; set; }
+        public virtual GroupType GroupType { get; set; }
+
         public int ChatId { get; set; }
-        public DateTime JoinDate { get; set; }
-        public virtual AppUser AppUser { get; set; }
         public virtual Chat Chat { get; set; }
     }
 }

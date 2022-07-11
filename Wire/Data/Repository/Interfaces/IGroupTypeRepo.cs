@@ -7,9 +7,8 @@ using Wire.Models;
 
 namespace Wire.Data.Repository.Interfaces
 {
-    public interface IUserChatRepo : IGenericRepo<UserChat>
+    public interface IGroupTypeRepo : IGenericRepo<GroupType>
     {
-        List<UserChat> GetFriendsWithChats(string userId);
-        IEnumerable<Group> GetGroups(string userId);
+        List<GroupType> GetGroupTypes();
     }
 }

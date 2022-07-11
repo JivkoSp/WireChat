@@ -15,6 +15,8 @@ namespace Wire.Data.Repository.UnitOfWork
         IChatRepo ChatRepo { get; }
         IUserChatRepo UserChatRepo { get; }
         IMessageRepo MessageRepo { get; }
+        IGroupTypeRepo GroupTypeRepo { get; }
+        IChatTopicRepo ChatTopicRepo { get; }
         Task SaveChangesAsync();
     }
 }

@@ -10,26 +10,29 @@ using Wire.Models.ViewModels;
 
 namespace Wire.Components
 {
-    public class SideMenuViewComponent : ViewComponent
+    public class GroupSideMenuViewComponent : ViewComponent
     {
         private IUnitOfWork UnitOfWork;
         private UserManager<AppUser> UserManager;
 
-        public SideMenuViewComponent(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+        public GroupSideMenuViewComponent(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
         {
             UnitOfWork = unitOfWork;
             UserManager = userManager;
         }
 
-        public IViewComponentResult Invoke(string RoomType = null)
+        public IViewComponentResult Invoke(int ChatId)
         {
+            string userId = UserManager.GetUserId(UserClaimsPrincipal);
+
             return View
                 (
-                    new SideMenuViewModel
+                    new GroupSideMenuViewModel
                     {
-                        RoomType = RoomType,
-                        Contacts = UnitOfWork.UserChatRepo.GetFriendsWithChats(UserManager.GetUserId(UserClaimsPrincipal))
-                    }
+                        UserId = userId,
+                        ChatTopics = UnitOfWork.ChatTopicRepo.GetChatTopics(ChatId),
+                        Contacts = UnitOfWork.UserChatRepo.GetFriendsWithChats(userId)
+                    }      
                 );
         }
     }

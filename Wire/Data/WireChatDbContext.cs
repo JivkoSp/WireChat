@@ -22,6 +22,8 @@ namespace Wire.Data
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<PendingRequest> PendingRequests { get; set; }
         public virtual DbSet<UserChat> UserChats { get; set; }
+        public virtual DbSet<GroupType> GroupTypes { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -132,6 +134,33 @@ namespace Wire.Data
                 .HasForeignKey(prop => prop.ChatId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Chat_UserChats");
+            });
+
+            modelBuilder.Entity<GroupType>(builder => {
+
+                builder.ToTable("GroupType");
+
+                builder.Property(prop => prop.GroupTypeName)
+                .HasMaxLength(50).IsRequired();
+            });
+
+            modelBuilder.Entity<Group>(builder => {
+
+                builder.ToTable("Group");
+
+                builder.Property(prop => prop.GroupName)
+                .HasMaxLength(50).IsRequired();
+
+                builder.HasOne(prop => prop.GroupType)
+                .WithMany(prop => prop.Groups)
+                .HasForeignKey(prop => prop.GroupTypeId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_GroupType_Groups");
+
+                builder.HasOne(prop => prop.Chat)
+                .WithOne(prop => prop.Group)
+                .HasForeignKey<Group>(prop => prop.ChatId)
+                .HasConstraintName("FK_Group_Chat");
             });
         }
     }

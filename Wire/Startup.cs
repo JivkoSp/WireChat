@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Westwind.AspNetCore.LiveReload;
+using Wire.AutomapperProfiles;
 using Wire.Data;
 using Wire.ExtensionMethods;
 using Wire.Hubs;
@@ -60,6 +61,11 @@ namespace Wire
             services.AddRepository();
             services.AddSignalR(opt => opt.EnableDetailedErrors = true);
             services.AddAntiforgery(config => config.HeaderName = "XSRF-TOKEN");
+
+            services.AddAutoMapper(configAction => {
+                configAction.AddProfile<GroupProfile>();
+                configAction.AddProfile<FriendProfile>();
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -1,0 +1,146 @@
+﻿@model GroupViewModel
+
+<section id="GroupContainer"
+         style="position:absolute; top:10vh; left:12vw; z-index:100; display:none;" class="container bg-light rounded shadow w-75">
+    <div class="row">
+        <div class="col col-lg-3 col-xl-3 col-md-12 col-sm-12 order-xl-1 order-lg-1 order-sm-2 order-2 shadow">
+            <ul id="groupList" style="height:60vh;" class="users overflow-auto bg-light mt-3">
+                @foreach (var group in Model.GroupDtos)
+                {
+                    <li class="person shadow">
+                        <a asp-controller="Chat" asp-action="ChatRoom" 
+                           asp-route-ChatId="@group.ChatId" asp-route-roomType="Public" class="user">
+                            <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="Group">
+                        </a>
+                        <p class="name-time">
+                            <span>@group.GroupName</span>                        
+                        </p>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col col-lg-6 col-xl-6 col-md-6 col-sm-6 mt-3 m-auto shadow">
+            <div class="input-group">
+                <input class="form-control" placeholder="Search groups">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-primary">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="row mt-3 order-xl-2 order-lg-2 order-sm-3 order-3 m-auto">
+                <div style="height:54.4vh;" class="col-5">
+
+                    <div style="width:30vw; margin-left:2vw;">
+                        <p class="text-center m-auto h5">Create new group</p>
+                        <div style="width:30%;" class="m-auto mt-3">
+                            <img src="~/HomeImage/SignUp/pexels-frank-cone-2230796.jpg" class="img-fluid shadow rounded" />
+                        </div>
+                        <div class="mb-3">
+                            <input id="GroupNameInput" type="email" class="form-control mt-3" placeholder="Your Group name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleFormControlTextarea1" class="form-label ml-1">Group type</label>
+                            <select id="GroupType" class="custom-select w-75 ml-2">
+                                @foreach (var groupType in Model.GroupTypes)
+                                {
+                                   <option value="@groupType.GroupTypeId">@groupType.GroupTypeName</option>
+                                }
+                            </select>
+                          
+                        </div>
+                        <button id="CreateGroup" style="margin-left:24%;"
+                                class="btn btn-dark btn-outline-info w-50 mt-4">
+                            Create
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col col-lg-3 col-xl-3 col-md-6 col-sm-6 order-xl-3 order-lg-3 order-sm-1 order-1 shadow">
+            <div>
+                <button id="GroupContainerClose" type="button" class="btn-close btn-close float-right mt-1" aria-label="Close"></button>
+            </div>
+            <ul style="height:50vh; margin-top:20%;" class="users overflow-auto bg-dark">
+                <li class="person">
+                    Some activity
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub").build();
+
+        connection.start().then(() => {
+
+            connection.on("CreatePublicGroup", (message) => {
+
+                let liElement = document.createElement("li");
+                liElement.setAttribute("class", "person shadow");
+
+                let aElement = document.createElement("a");
+                aElement.setAttribute("class", "user");
+                aElement.setAttribute("href", `/Chat/ChatRoom?ChatId=${message.chatId}&roomType=Public`);
+
+                let imgElement = document.createElement("img");
+                imgElement.setAttribute("src", "https://www.bootdey.com/img/Content/avatar/avatar3.png");
+                imgElement.setAttribute("alt", "Group");
+
+                aElement.appendChild(imgElement);
+
+                let pElement = document.createElement("p");
+                pElement.setAttribute("class", "name-time");
+
+                let spanElement = document.createElement("span");
+                spanElement.textContent = message.groupName;
+
+                pElement.appendChild(spanElement);
+
+                liElement.appendChild(aElement);
+                liElement.appendChild(pElement);
+
+                document.getElementById("groupList").appendChild(liElement);
+                liElement.scrollIntoView({ behavior: "smooth" });
+            });
+
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+
+        $("#Groups").click(() => {
+            document.getElementById("GroupContainer").style.display = "block";
+        });
+
+        $("#GroupContainerClose").click(() => {
+            document.getElementById("GroupContainer").style.display = "none";
+        });
+
+        $("#CreateGroup").click(() => {
+            $.ajax({
+                type: 'POST',
+                url: '/Chat/CreateGroup',
+                data: {
+                    "groupName": document.getElementById("GroupNameInput").value,
+                    "groupTypeId": document.getElementById("GroupType").value
+                },
+                failure: function (response) {
+                    console.log("Fail", response);
+                },
+                error: function (response) {
+                    console.log("Error", response);
+                }
+            });
+        });
+    });
+
+</script>

@@ -25,5 +25,10 @@ namespace Wire.Hubs
             message.DateTime = DateTime.Now.ToString("h:mm tt");
             await Clients.Group(group).SendAsync("SendMessageToGroup", message);
         }
+
+        public async Task CreatePublicGroup(GroupDto groupDto)
+        {
+            await Clients.Caller.SendAsync("CreatePublicGroup", groupDto);
+        }
     }
 }

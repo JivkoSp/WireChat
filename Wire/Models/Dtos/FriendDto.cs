@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace Wire.Models.Dtos
 {
-    public class GroupDto
+    public class FriendDto
     {
-        public int ChatId { get; set; }
-        public string GroupName { get; set; }
+        public AppUser Friend { get; set; }
     }
 }
