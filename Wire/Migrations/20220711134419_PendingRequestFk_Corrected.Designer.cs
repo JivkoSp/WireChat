@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Wire.Data;
 
 namespace Wire.Migrations
 {
     [DbContext(typeof(WireChatDbContext))]
-    partial class WireChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220711134419_PendingRequestFk_Corrected")]
+    partial class PendingRequestFk_Corrected
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -397,9 +399,6 @@ namespace Wire.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SenderId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SenderName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PendingRequestId");

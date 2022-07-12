@@ -11,18 +11,28 @@ namespace Wire.Data.Repository.Repositories
     {
         private WireChatDbContext WireChatDbContext => Context as WireChatDbContext;
 
-        public UserChatRepo(WireChatDbContext dbContext) : base(dbContext)
+        public UserChatRepo(WireChatDbContext dbContext) : base(dbContext) 
         {
         }
 
-        public List<UserChat> GetFriendsWithChats(string userId)
+        public List<UserChat> GetContactFriends(string userId)
         {
-            return WireChatDbContext.Friends.Where(u => u.SenderId == userId)
-                    .Include(u => u.AppUser)
-                    .ThenInclude(u => u.UserChats.Where(chat => chat.ChatId == WireChatDbContext.ChatTypes
-                    .Where(ch => ch.ChatName == "Private").Select(ch => ch.ChatTypeId).FirstOrDefault()))
-                    .ThenInclude(ursChat => ursChat.AppUser)
-                    .Select(u => u.AppUser.UserChats).FirstOrDefault().ToList();
+            try
+            {
+                return  WireChatDbContext.UserChats
+                    .Include(u => u.Chat)
+                    .ThenInclude(chat => chat.ChatType)
+                    .Where(u => u.AppUserId == userId && u.Chat.ChatType.ChatName == "Private")
+                    .Join(WireChatDbContext.UserChats, u => u.ChatId, f => f.ChatId,
+                        (u, f) => new { User = u, Friend = f })
+                    .Where(c => c.Friend.AppUserId != c.User.AppUserId)
+                    .Select(chats => chats.Friend).Include(chats => chats.AppUser)
+                    .ToList();
+            }           
+            catch
+            {
+                return new List<UserChat>();
+            }
         }
 
         public IEnumerable<Group> GetGroups(string userId)
@@ -32,6 +42,12 @@ namespace Wire.Data.Repository.Repositories
                     .ThenInclude(u => u.Group)
                     .Where(u => u.Chat.Group != null)
                     .Select(u => u.Chat.Group);
+        }
+
+        public bool isMember(string userId, int chatId)
+        {
+            return WireChatDbContext.UserChats.Where(c => c.ChatId == chatId)
+                    .FirstOrDefault(u => u.AppUserId == userId) != null ? true : false;
         }
     }
 }

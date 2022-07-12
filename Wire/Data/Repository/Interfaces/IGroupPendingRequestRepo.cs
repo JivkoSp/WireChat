@@ -7,9 +7,8 @@ using Wire.Models;
 
 namespace Wire.Data.Repository.Interfaces
 {
-    public interface IPendingRequestRepo : IGenericRepo<PendingRequest>
+    public interface IGroupPendingRequestRepo : IGenericRepo<GroupPendingRequest>
     {
-        IEnumerable<PendingRequest> GetPendingRequests(string userId);
-        bool HavePendingRequest(string senderId, string receiverId);
+        GroupPendingRequest GetGroupPendingRequest(int pendingRequestId);
     }
 }

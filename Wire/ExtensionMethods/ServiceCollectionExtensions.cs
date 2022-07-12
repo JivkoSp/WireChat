@@ -22,6 +22,7 @@ namespace Wire.ExtensionMethods
             services.AddScoped<IMessageRepo, MessageRepo>();
             services.AddScoped<IGroupTypeRepo, GroupTypeRepo>();
             services.AddScoped<IChatTopicRepo, ChatTopicRepo>();
+            services.AddScoped<IGroupPendingRequestRepo, GroupPendingRequestRepo>();
         }
     }
 }

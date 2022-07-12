@@ -1,33 +1,35 @@
-﻿@model List<PendingRequest>
+﻿@model IEnumerable<PendingRequestDto>
 
 <section class="container-fluid">
     <div id="HomePage-Container" class="row HomePage-Container">
-        <vc:side-menu room-type=""/>
+        <vc:side-menu room-type="" />
         <div class="col text-white bg-dark border-top border-right border-info PendingList-Container overflow-auto">
-            <div id="PendingReqList" class="list-group">
+            <div id="PendingReqList" class="row list-group">
                 @foreach (var pendingRequest in Model)
                 {
-                <div class="list-group-item list-group-item-dark w-75 m-auto mt-2">
-                    <input id="SenderId" type="hidden" value="@pendingRequest.SenderId" />
-                    <input id="ReceiverId" type="hidden" value="@pendingRequest.ReceiverId" />
-                    <input id="ChatType" type="hidden" value="@pendingRequest.ChatType" />
-                    <span class="text-dark h6 pr-5">
-                        Sender: Name
+                <form asp-controller="Home" asp-action="AcceptPendingRequest" data-ajax="true"
+                      data-ajax-complete="RequestPosted"
+                      class="col-xl-6 col-lg-6 col-md-8 col-sm-10 col-10 list-group-item list-group-item-dark m-auto mt-5" method="post">
+                    <input type="hidden" name="PendingRequestId" value="@pendingRequest.PendingRequestId" />
+                    <input type="hidden" name="SenderId" value="@pendingRequest.SenderId" />
+                    <input type="hidden" name="ReceiverId" value="@pendingRequest.ReceiverId" />
+                    <input type="hidden" name="ChatType" value="@pendingRequest.ChatType" />
+
+                    <span class="text-dark h6">
+                        Sender: @pendingRequest.SenderName
                     </span>
-                    <p class="h5 font-weight-bold d-inline-block p-1 pt-2 ml-5 w-25 text-center">
+                    <p class="h5 font-weight-bold text-center">
                         @pendingRequest.ChatType chat
                     </p>
-                    <button id="DeclineBtn" class="btn bg-warning float-right p-2 ml-1">
-                        Decline
-                        <i class="bi bi-envelope-slash-fill pl-1"></i>
+                    <button name="Action" value="Decline" type="submit" class="btn bg-warning float-right p-2 ml-2">
+                        <i class="bi bi-envelope-slash-fill text-center h5"></i>
                     </button>
-                    <button id="AcceptBtn" class="btn bg-info float-right p-2 ml-1">
-                        Accept
-                        <i class="bi bi-envelope-plus-fill p-1"></i>
+                    <button name="Action" value="Accept" type="submit" class="btn bg-info float-right p-2 ml-1">
+                        <i class="bi bi-envelope-plus-fill text-center h5"></i>
                     </button>
-                </div>
+                </form>
                 }
-            </div>         
+            </div>
         </div>
         <partial name="ActivityMenuPartial" />
     </div>
@@ -35,6 +37,7 @@
 
 <script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
 <script src="~/lib/jquery/dist/jquery.js"></script>
+
 <script>
 
     $("document").ready(() => {
@@ -48,69 +51,135 @@
 
                 console.log(message);
 
-                var liElement = document.createElement("div");
-                liElement.setAttribute("class", "list-group-item list-group-item-warning w-75 m-auto mt-2");
+                var formElement = document.createElement("form");
+                formElement.setAttribute("action", "/Home/AcceptPendingRequest");
+                formElement.setAttribute("data-ajax", "true");
+                formElement.setAttribute("data-ajax-complete", "RequestPosted");
+                formElement.setAttribute("method", "post");
+                formElement.setAttribute("class",
+                    "col-xl-6 col-lg-6 col-md-8 col-sm-10 col-10 list-group-item list-group-item-dark m-auto mt-5");
+
+                var reqId = document.createElement("input");
+                var senderId = document.createElement("input");
+                var receiverId = document.createElement("input");
+                var chatType = document.createElement("input");
+
+                reqId.setAttribute("type", "hidden");
+                reqId.setAttribute("name", "PendingRequestId");
+                reqId.setAttribute("value", message.pendingRequestId);
+
+                senderId.setAttribute("type", "hidden");
+                senderId.setAttribute("name", "SenderId");
+                senderId.setAttribute("value", message.senderId);
+
+                receiverId.setAttribute("type", "hidden");
+                receiverId.setAttribute("name", "ReceiverId");
+                receiverId.setAttribute("value", message.receiverId);
+
+                chatType.setAttribute("type", "hidden");
+                chatType.setAttribute("name", "ChatType");
+                chatType.setAttribute("value", message.chatType);
 
                 var span = document.createElement("span");
-                span.textContent = "Sender: Name";
-                span.setAttribute("class", "text-primary h6 pr-5");
+                span.textContent = `Sender: ${message.senderName}`;
+                span.setAttribute("class", "text-dark h6");
 
                 var p = document.createElement("p");
-                p.textContent = message.chatType+" chat";
-                p.setAttribute("class", "h5 font-weight-bold d-inline-block p-1 pt-2 ml-5 w-25 text-center");
+                p.textContent = message.chatType + " chat";
+                p.setAttribute("class", "h5 font-weight-bold text-center");
 
                 var AcceptBtn = document.createElement("button");
-                AcceptBtn.textContent = "Decline";
-                AcceptBtn.setAttribute("class", "btn bg-warning float-right p-2 ml-1");
-                AcceptBtn.setAttribute("id", "AcceptBtn");
+                AcceptBtn.innerHTML = `<i class="bi bi-envelope-slash-fill text-center h5"></i>`;
+                AcceptBtn.setAttribute("class", "btn bg-warning float-right p-2 ml-2");
+                AcceptBtn.setAttribute("name", "Action");
+                AcceptBtn.setAttribute("value", "Decline");
+                AcceptBtn.setAttribute("type", "submit");
 
                 var DeclineBtn = document.createElement("button");
-                DeclineBtn.textContent = "Accept";
+                DeclineBtn.innerHTML = `<i class="bi bi-envelope-plus-fill text-center h5"></i>`;
                 DeclineBtn.setAttribute("class", "btn bg-info float-right p-2 ml-1");
-                DeclineBtn.setAttribute("id", "DeclineBtn");
+                DeclineBtn.setAttribute("name", "Action");
+                DeclineBtn.setAttribute("value", "Accept");
+                DeclineBtn.setAttribute("type", "submit");
 
-                liElement.appendChild(span);
-                liElement.appendChild(p);
-                liElement.appendChild(AcceptBtn);
-                liElement.appendChild(DeclineBtn);
+                formElement.appendChild(reqId);
+                formElement.appendChild(senderId);
+                formElement.appendChild(receiverId);
+                formElement.appendChild(chatType);
+                formElement.appendChild(span);
+                formElement.appendChild(p);
+                formElement.appendChild(AcceptBtn);
+                formElement.appendChild(DeclineBtn);
 
-                document.getElementById("PendingReqList").appendChild(liElement);
+                document.getElementById("PendingReqList").appendChild(formElement);
             });
 
         }).catch(function (err) {
             return console.error(err.toString());
         });
 
-        $('body').on('click', 'button#AcceptBtn', () => {
+        RequestPosted = function (xhr) {
+            console.log("form posted", xhr.responseJSON);
 
-            if (document.getElementById("ChatType").value == "Private") {
+            if (xhr.responseJSON.action == "Decline") {
+
                 $.ajax({
                     type: 'POST',
-                    url: '/Chat/CreatePrivateChat',
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("XSRF-TOKEN", $('input:hidden[name="__RequestVerificationToken"]').val());
-                    },
+                    url: '/Home/DeletePendingRequest',
                     data: {
-                        "senderId": document.getElementById("SenderId").value,
-                        "receiverId": document.getElementById("ReceiverId").value
+                        "requestDto": xhr.responseJSON
                     },
-                    success: () => {
-                        console.log("request accepted");
+                    success: function (response) {
+                        window.location.replace(response.redirectUrl);
                     },
-                    fail: (response) => { console.log(response); },
-                    error: (response) => { console.log(response); }
+                    failure: function (response) {
+                        console.log("Fail", response);
+                    },
+                    error: function (response) {
+                        console.log("Error", response);
+                    }
                 });
+
+            } else {
+                if (xhr.responseJSON.chatType == "Private") {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Chat/CreatePrivateChat',
+                        data: {
+                            "requestDto": xhr.responseJSON
+                        },
+                        success: function (response) {
+                            window.location.replace(response.redirectUrl);
+                        },
+                        failure: function (response) {
+                            console.log("Fail", response);
+                        },
+                        error: function (response) {
+                            console.log("Error", response);
+                        }
+                    });
+                }
+                else {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Group/JoinGroup',
+                        data: {
+                            "requestDto": xhr.responseJSON
+                        },
+                        success: function (response) {
+                           window.location.replace(response.redirectUrl);
+                        },
+                        failure: function (response) {
+                            console.log("Fail", response);
+                        },
+                        error: function (response) {
+                            console.log("Error", response);
+                        }
+                    });
+                }
             }
-            else {
+        }
 
-            }
-
-        });
-
-        $('body').on('click', 'button#DeclineBtn', () => {
-
-            console.log("decline");
-        });
 
     });
 

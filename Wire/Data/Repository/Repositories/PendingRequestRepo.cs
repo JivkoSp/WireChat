@@ -16,9 +16,15 @@ namespace Wire.Data.Repository.Repositories
         {
         }
 
-        public List<PendingRequest> GetPendingRequests()
+        public IEnumerable<PendingRequest> GetPendingRequests(string userId)
         {
-            return WireChatDbContext.PendingRequests.ToList();
+            return WireChatDbContext.PendingRequests.Where(req => req.ReceiverId == userId);
+        }
+
+        public bool HavePendingRequest(string senderId, string receiverId)
+        {
+            return WireChatDbContext.PendingRequests.Where(s => s.ReceiverId == receiverId)
+                    .FirstOrDefault(r => r.SenderId == senderId) != null ? true : false;
         }
     }
 }

@@ -38,7 +38,7 @@
                                  style="font-family:Arial, FontAwesome"  aria-describedby="JoinFriend">
                             <button id="JoinFriend" class="btn btn-outline-info" type="button">
                                 Join Friend
-                                <i class="bi bi-person-plus-fill"></i>
+                               <i class="bi bi-person-plus-fill"></i>
                             </button>
                         </div>
                         <ul style="height:40vh;" class="users mt-1 overflow-auto">
@@ -106,10 +106,11 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/Chat/CreateGroup',
+                url: '/Home/SendFriendRequest',
                 data: {
-                    "groupName": document.getElementById("GroupNameInput").value,
-                    "groupTypeId": document.getElementById("GroupType").value
+                    "userName": document.getElementById("FriendContact").value,
+                    "chatType": "Public",
+                    "chatId": @ViewContext.HttpContext.Request.Query["ChatId"]
                 },
                 failure: function (response) {
                     console.log("Fail", response);

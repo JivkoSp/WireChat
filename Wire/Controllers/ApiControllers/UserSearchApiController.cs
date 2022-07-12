@@ -48,7 +48,7 @@ namespace Wire.Controllers.ApiControllers
             {
                 string SearchTerm = HttpContext.Request.Query["term"];
 
-                var response = UnitOfWork.UserChatRepo.GetFriendsWithChats(userId);
+                var response = UnitOfWork.UserChatRepo.GetContactFriends(userId);
                 List<FriendDto> friendDtos = Mapper.Map<List<FriendDto>>(response);
                 List<string> friendNames = Mapper.Map<List<string>>(friendDtos);
 

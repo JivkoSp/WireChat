@@ -10,6 +10,5 @@ namespace Wire.Data.Repository.Interfaces
     public interface IAppUserRepo : IGenericRepo<AppUser>
     {
         List<string> GetUsersByName(string searchTerm);
-        bool isFriend(string senderId, string receiverId);
     }
 }

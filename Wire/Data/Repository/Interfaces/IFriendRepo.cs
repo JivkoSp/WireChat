@@ -9,5 +9,6 @@ namespace Wire.Data.Repository.Interfaces
 {
     public interface IFriendRepo : IGenericRepo<Friend>
     {
+        bool isFriend(string senderId, string receiverId);
     }
 }

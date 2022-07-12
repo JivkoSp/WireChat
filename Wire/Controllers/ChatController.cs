@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -18,30 +19,32 @@ namespace Wire.Controllers
         private IUnitOfWork UnitOfWork;
         private IHubContext<ChatHub> HubContext;
         private UserManager<AppUser> UserManager;
+        private IMapper Mapper;
 
         public ChatController(IUnitOfWork unitOfWork, IHubContext<ChatHub> hubContext,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager, IMapper mapper)
         {
             UnitOfWork = unitOfWork;
             HubContext = hubContext;
             UserManager = userManager;
+            Mapper = mapper;
         }
 
         [HttpPost]
-        public async Task CreatePrivateChat(string senderId, string receiverId)
+        public async Task<JsonResult> CreatePrivateChat(PendingRequestDto requestDto)
         {
             try
             {
                 Friend senderFriend = new Friend
                 {
-                    SenderId = senderId,
-                    ReceiverId = receiverId
+                    SenderId = requestDto.SenderId,
+                    ReceiverId = requestDto.ReceiverId
                 };
 
                 Friend receiverFriend = new Friend
                 {
-                    SenderId = receiverId,
-                    ReceiverId = senderId
+                    SenderId = requestDto.ReceiverId,
+                    ReceiverId = requestDto.SenderId
                 };
 
                 await UnitOfWork.FriendRepo.AddRangeAsync(new List<Friend> { senderFriend, receiverFriend });
@@ -56,19 +59,22 @@ namespace Wire.Controllers
 
                 UserChat newSenderChat = new UserChat
                 {
-                    AppUserId = senderId,
+                    AppUserId = requestDto.SenderId,
                     ChatId = privateChat.ChatId,
                     JoinDate = DateTime.Now
                 };
 
                 UserChat newReceiverChat = new UserChat
                 {
-                    AppUserId = receiverId,
+                    AppUserId = requestDto.ReceiverId,
                     ChatId = privateChat.ChatId,
                     JoinDate = DateTime.Now
                 };
 
                 await UnitOfWork.UserChatRepo.AddRangeAsync(new List<UserChat> { newSenderChat, newReceiverChat });
+
+                UnitOfWork.PendingRequestRepo.Remove(Mapper.Map<PendingRequest>(requestDto));
+
                 await UnitOfWork.SaveChangesAsync();
 
                 GroupDto groupDto = new GroupDto
@@ -76,13 +82,20 @@ namespace Wire.Controllers
                     ChatId = privateChat.ChatId
                 };
 
-                await HubContext.Clients.User(senderId).SendAsync("AddToPrivateChat", senderId, groupDto);
-                await HubContext.Clients.User(receiverId).SendAsync("AddToPrivateChat", receiverId, groupDto);
+
+                groupDto.GroupName = User.Identity.Name;
+                await HubContext.Clients.User(requestDto.SenderId).SendAsync("AddToPrivateChat", requestDto.SenderId, groupDto);
+                groupDto.GroupName = requestDto.SenderName;
+                await HubContext.Clients.User(requestDto.ReceiverId).SendAsync("AddToPrivateChat", requestDto.ReceiverId, groupDto);
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
+            string redirectUrl = Url.Action("PendingRequests", "Home");
+
+            return new JsonResult(new { redirectUrl });
         }
 
         public IActionResult ChatRoom(int ChatId, string roomType="Private")
@@ -114,45 +127,6 @@ namespace Wire.Controllers
                 await UnitOfWork.SaveChangesAsync();
             }
             catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-        [HttpPost]
-        public async Task CreateGroup(string groupName, int groupTypeId)
-        {
-            try
-            {
-               string userId = UserManager.GetUserId(User);
-
-               UserChat userChat = new UserChat
-                {
-                    AppUserId = userId,
-                    JoinDate = DateTime.Now,
-                    Chat = new Chat
-                    {
-                        ChatTypeId = UnitOfWork.ChatTypeRepo.GetChatTypeId("Public"),
-                        Group = new Group
-                        {
-                            GroupName = groupName,
-                            GroupTypeId = groupTypeId
-                        }
-                    }
-                };
-
-                await UnitOfWork.UserChatRepo.AddAsync(userChat);
-                await UnitOfWork.SaveChangesAsync();
-
-                GroupDto groupDto = new GroupDto
-                {
-                    ChatId = userChat.Chat.ChatId,
-                    GroupName = groupName
-                };
-
-                await HubContext.Clients.User(userId).SendAsync("CreatePublicGroup", groupDto);
-            }
-            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }

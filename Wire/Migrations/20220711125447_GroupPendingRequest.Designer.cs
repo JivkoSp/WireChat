@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Wire.Data;
 
 namespace Wire.Migrations
 {
     [DbContext(typeof(WireChatDbContext))]
-    partial class WireChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220711125447_GroupPendingRequest")]
+    partial class GroupPendingRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -394,17 +396,14 @@ namespace Wire.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ReceiverId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SenderId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SenderName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("PendingRequestId");
 
-                    b.HasIndex("ReceiverId");
+                    b.HasIndex("SenderId");
 
                     b.ToTable("PendingRequest");
                 });
@@ -571,7 +570,7 @@ namespace Wire.Migrations
                 {
                     b.HasOne("Wire.Models.AppUser", "AppUser")
                         .WithMany("PendingRequests")
-                        .HasForeignKey("ReceiverId")
+                        .HasForeignKey("SenderId")
                         .HasConstraintName("FK_AppUser_PendingRequests")
                         .OnDelete(DeleteBehavior.Cascade);
 

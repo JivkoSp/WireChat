@@ -128,7 +128,7 @@
         $("#CreateGroup").click(() => {
             $.ajax({
                 type: 'POST',
-                url: '/Chat/CreateGroup',
+                url: '/Group/CreateGroup',
                 data: {
                     "groupName": document.getElementById("GroupNameInput").value,
                     "groupTypeId": document.getElementById("GroupType").value

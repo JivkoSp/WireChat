@@ -22,14 +22,5 @@ namespace Wire.Data.Repository.Repositories
             return WireChatDbContext.AppUsers.Where(u => u.UserName.Contains(searchTerm))
                     .Select(u => u.UserName).ToList();
         }
-
-        public bool isFriend(string senderId, string receiverId)
-        {
-            return WireChatDbContext.AppUsers.Where(u => u.Id == senderId)
-                     .Join(WireChatDbContext.Friends, Sender => Sender.Id, Receiver => Receiver.SenderId,
-                        (Sender, Receiver) => new { Sender = Sender, Receiver = Receiver })
-                     .FirstOrDefault(u => u.Receiver.ReceiverId == receiverId) != null ? true : false;
-                    
-        }
     }
 }

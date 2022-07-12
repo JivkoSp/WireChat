@@ -18,10 +18,12 @@ namespace Wire.Data.Repository.UnitOfWork
         public IMessageRepo MessageRepo { get; private set; }
         public IGroupTypeRepo GroupTypeRepo { get; private set; }
         public IChatTopicRepo ChatTopicRepo { get; private set; }
+        public IGroupPendingRequestRepo GroupPendingRequestRepo { get; private set; }
 
         public UnitOfWork(WireChatDbContext dbContext, IAppUserRepo userRepo, IPendingRequestRepo pendingRequestRepo,
             IFriendRepo friendRepo, IChatTypeRepo chatTypeRepo, IChatRepo chatRepo, IUserChatRepo userChatRepo,
-            IMessageRepo messageRepo, IGroupTypeRepo groupTypeRepo, IChatTopicRepo chatTopicRepo)
+            IMessageRepo messageRepo, IGroupTypeRepo groupTypeRepo, IChatTopicRepo chatTopicRepo,
+            IGroupPendingRequestRepo groupPendingRequestRepo)
         {
             WireChatDbContext = dbContext;
             UserRepo = userRepo;
@@ -33,6 +35,7 @@ namespace Wire.Data.Repository.UnitOfWork
             MessageRepo = messageRepo;
             GroupTypeRepo = groupTypeRepo;
             ChatTopicRepo = chatTopicRepo;
+            GroupPendingRequestRepo = groupPendingRequestRepo;
         }
 
         public async Task SaveChangesAsync()

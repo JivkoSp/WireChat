@@ -17,6 +17,7 @@ namespace Wire.Data.Repository.UnitOfWork
         IMessageRepo MessageRepo { get; }
         IGroupTypeRepo GroupTypeRepo { get; }
         IChatTopicRepo ChatTopicRepo { get; }
+        IGroupPendingRequestRepo GroupPendingRequestRepo { get; }
         Task SaveChangesAsync();
     }
 }

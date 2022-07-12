@@ -28,7 +28,7 @@ namespace Wire.Components
                     new SideMenuViewModel
                     {
                         RoomType = RoomType,
-                        Contacts = UnitOfWork.UserChatRepo.GetFriendsWithChats(UserManager.GetUserId(UserClaimsPrincipal))
+                        Contacts = UnitOfWork.UserChatRepo.GetContactFriends(UserManager.GetUserId(UserClaimsPrincipal))
                     }
                 );
         }

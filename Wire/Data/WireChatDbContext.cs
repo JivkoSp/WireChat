@@ -24,6 +24,7 @@ namespace Wire.Data
         public virtual DbSet<UserChat> UserChats { get; set; }
         public virtual DbSet<GroupType> GroupTypes { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<GroupPendingRequest> GroupPendingRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,7 +109,7 @@ namespace Wire.Data
 
                 builder.HasOne(prop => prop.AppUser)
                 .WithMany(prop => prop.PendingRequests)
-                .HasForeignKey(prop => prop.SenderId)
+                .HasForeignKey(prop => prop.ReceiverId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_AppUser_PendingRequests");
             });
@@ -161,6 +162,24 @@ namespace Wire.Data
                 .WithOne(prop => prop.Group)
                 .HasForeignKey<Group>(prop => prop.ChatId)
                 .HasConstraintName("FK_Group_Chat");
+            });
+
+            modelBuilder.Entity<GroupPendingRequest>(builder => {
+
+                builder.ToTable("GroupPendingRequest");
+                builder.HasKey(prop => prop.PendingRequestId);
+
+                builder.HasOne(prop => prop.PendingRequest)
+                .WithOne(prop => prop.GroupPendingRequest)
+                .HasForeignKey<GroupPendingRequest>(prop => prop.PendingRequestId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_PendingRequest_GroupPendingRequest");
+
+                builder.HasOne(prop => prop.Chat)
+                .WithOne(prop => prop.GroupPendingRequest)
+                .HasForeignKey<GroupPendingRequest>(prop => prop.ChatId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Chat_GroupPendingRequest");
             });
         }
     }

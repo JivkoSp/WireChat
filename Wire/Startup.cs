@@ -65,6 +65,7 @@ namespace Wire
             services.AddAutoMapper(configAction => {
                 configAction.AddProfile<GroupProfile>();
                 configAction.AddProfile<FriendProfile>();
+                configAction.AddProfile<PendingRequestProfile>();
             });
         }
 

@@ -63,9 +63,9 @@
                 let liElement = document.createElement("li");
                 liElement.setAttribute("class", "person");
 
-                let aElement = document.createElement("div");
+                let aElement = document.createElement("a");
                 aElement.setAttribute("class", "user");
-                aElement.setAttribute("href", `/Chat/ChatRoom?ChatId=${message.groupId}`);
+                aElement.setAttribute("href", `/Chat/ChatRoom?ChatId=${message.chatId}`);
 
                 let imgElement = document.createElement("img");
                 imgElement.setAttribute("src", "https://www.bootdey.com/img/Content/avatar/avatar3.png");
@@ -82,6 +82,7 @@
 
                 let spanUserNameElement = document.createElement("span");
                 spanUserNameElement.setAttribute("class", "name");
+                spanUserNameElement.textContent = message.groupName;
 
                 let spanJoinDateElement = document.createElement("span");
                 spanJoinDateElement.setAttribute("class", "time font text-dark");

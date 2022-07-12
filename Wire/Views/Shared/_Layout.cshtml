@@ -50,7 +50,7 @@
             </div>
             <div class="row">
                 <div class="col text-white bg-dark shadow AddFriendWindow">
-                    <form asp-controller="Home" asp-action="SendFriendRequest" method="post">
+                    <form asp-controller="Home" asp-action="SendFriendRequest" asp-route-chatType="Private" method="post">
                         <div class="input-group mb-3">
                             <input id="search" name="userName" type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username"
                                    aria-describedby="basic-addon2">
@@ -71,6 +71,7 @@
         @RenderBody()
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.js"></script>
         <script>
 
             $("document").ready(() => {

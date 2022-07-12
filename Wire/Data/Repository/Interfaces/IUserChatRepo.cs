@@ -9,7 +9,8 @@ namespace Wire.Data.Repository.Interfaces
 {
     public interface IUserChatRepo : IGenericRepo<UserChat>
     {
-        List<UserChat> GetFriendsWithChats(string userId);
+        List<UserChat> GetContactFriends(string userId);
         IEnumerable<Group> GetGroups(string userId);
+        bool isMember(string userId, int chatId);
     }
 }
