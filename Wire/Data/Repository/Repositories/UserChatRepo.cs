@@ -49,5 +49,11 @@ namespace Wire.Data.Repository.Repositories
             return WireChatDbContext.UserChats.Where(c => c.ChatId == chatId)
                     .FirstOrDefault(u => u.AppUserId == userId) != null ? true : false;
         }
+
+        public void DeleteEntry(int chatId)
+        {
+            WireChatDbContext.UserChats.Remove(
+                WireChatDbContext.UserChats.FirstOrDefault(u => u.ChatId == chatId));
+        }
     }
 }

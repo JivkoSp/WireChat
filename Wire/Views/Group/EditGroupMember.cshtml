@@ -1,0 +1,62 @@
+﻿@model EditMemberViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col mt-5">
+            <form class="shadow rounded" asp-controller="Group" asp-action="EditGroupMember"
+                  data-ajax="true" data-ajax-complete="EditMemberComplete" method="post">
+
+                <input type="hidden" name="MemberId" value="@Model.AppUser.Id" />
+                <input type="hidden" name="ChatId" value="@Model.ChatId" />
+
+                <div class="form-group text-center pt-3">
+                    <label for="kickMember" class="form-check-label h5">
+                        Kick
+                        <span class="text-primary">@Model.AppUser.UserName</span>
+                        from group
+                    </label>
+                    <input id="kickMember" type="checkbox" name="Kick" value="true">
+                    <input type="hidden" name="Kick" value="false" />
+                </div>
+                <div class="form-group text-center pt-2">
+                    <label class="col-form-label h5">Change role</label>
+                    <select name="RoleName" class="custom-select w-25 ml-2">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <option value="@role.Name">@role.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div id="CompletedMessage-Container" style="display:none;" class="text-center mt-3">
+                    <p id="CompletedMessage" class="h5 text-success"></p>
+                </div>
+
+                <div class="text-center mt-5">
+                    <button class="btn btn-dark btn-outline-info h5">Save</button>
+                    <a asp-controller="Chat" asp-action="ChatRoom" asp-route-roomType="Public"
+                       asp-route-ChatId="@Model.ChatId"
+                       class="btn btn-dark btn-outline-info h5">Go Back</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-xl-4 col-lg-4 mt-3 mr-5">
+            <img src="~/HomeImage/SignUp/pexels-frank-cone-2230796.jpg" class="img-fluid shadow rounded" />
+            <p class="text-center">@Model.AppUser.UserName</p>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        EditMemberComplete = function (xhr) {
+
+            $("#CompletedMessage-Container").css("display", "block");
+            document.getElementById("CompletedMessage").textContent = xhr.responseJSON;
+        };
+    });
+
+</script>

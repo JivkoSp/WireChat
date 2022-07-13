@@ -10,5 +10,6 @@ namespace Wire.Models.ViewModels
         public string UserId { get; set; }
         public IEnumerable<ChatTopic> ChatTopics { get; set; }
         public List<UserChat> Contacts { get; set; }
+        public IEnumerable<UserChat> Members { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace Wire.Models
         {
             UserChats = new HashSet<UserChat>();
             Messages = new HashSet<Message>();
+            BannGroupMembers = new HashSet<BannGroupMember>();
         }
 
         public int ChatId { get; set; }
@@ -23,5 +24,6 @@ namespace Wire.Models
         public virtual GroupPendingRequest GroupPendingRequest { get; set; }
         public virtual ICollection<UserChat> UserChats { get; set; }
         public virtual ICollection<Message> Messages { get; set; }
+        public virtual ICollection<BannGroupMember> BannGroupMembers { get; set; }
     }
 }

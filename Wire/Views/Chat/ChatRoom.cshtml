@@ -65,6 +65,11 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if(Model.RoomType == "Public")
+                        {
+                            <vc:group-members chat-id="@int.Parse(ViewContext.HttpContext.Request.Query["ChatId"])"/>
+                        }
                     </div>
                 </div>
             </div>

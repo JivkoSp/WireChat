@@ -31,7 +31,8 @@ namespace Wire.Components
                     {
                         UserId = userId,
                         ChatTopics = UnitOfWork.ChatTopicRepo.GetChatTopics(ChatId),
-                        Contacts = UnitOfWork.UserChatRepo.GetContactFriends(userId)
+                        Contacts = UnitOfWork.UserChatRepo.GetContactFriends(userId),
+                        Members = UnitOfWork.GroupRepo.GetGroupMembers(ChatId)
                     }      
                 );
         }

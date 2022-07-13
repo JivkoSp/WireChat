@@ -10,6 +10,7 @@ using Wire.Data.Repository.UnitOfWork;
 using Wire.Hubs;
 using Wire.Models;
 using Wire.Models.Dtos;
+using Wire.Models.ViewModels;
 
 namespace Wire.Controllers
 {
@@ -18,14 +19,16 @@ namespace Wire.Controllers
         private IUnitOfWork UnitOfWork { get; set; }
         private IHubContext<ChatHub> HubContext { get; set; }
         private UserManager<AppUser> UserManager { get; set; }
+        private RoleManager<IdentityRole> RoleManager { get; set; }
         private IMapper Mapper { get; set; }
 
         public GroupController(IUnitOfWork unitOfWork, IHubContext<ChatHub> hubContext,
-            UserManager<AppUser> userManager, IMapper mapper)
+            UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
         {
             UnitOfWork = unitOfWork;
             HubContext = hubContext;
             UserManager = userManager;
+            RoleManager = roleManager;
             Mapper = mapper;
         }
 
@@ -95,6 +98,53 @@ namespace Wire.Controllers
             string redirectUrl = Url.Action("PendingRequests", "Home");
 
             return new JsonResult(new { redirectUrl });
+        }
+
+
+        public async Task<IActionResult> EditGroupMember(string memberId, int chatId)
+        {
+            return View
+                (
+                   new EditMemberViewModel
+                   {
+                       ChatId = chatId,
+                       AppUser = await UserManager.FindByIdAsync(memberId),
+                       Roles = RoleManager.Roles.ToList()
+                   }           
+                );
+        }
+
+
+        [HttpPost]
+        public async Task<JsonResult> EditGroupMember(EditGroupMemberDto editGroupMemberDto)
+        {
+            try
+            {
+                if(editGroupMemberDto.Kick)
+                {
+                    UnitOfWork.UserChatRepo.DeleteEntry(editGroupMemberDto.ChatId);
+
+                    BannGroupMember groupMember = new BannGroupMember
+                    {
+                        ChatId = editGroupMemberDto.ChatId,
+                        AppUserId = editGroupMemberDto.MemberId
+                    };
+
+                    await UnitOfWork.BannGroupMemberRepo.AddAsync(groupMember);
+                    await UnitOfWork.SaveChangesAsync();
+                }
+                else
+                {
+                   await UserManager.AddToRoleAsync(
+                       await UserManager.FindByIdAsync(editGroupMemberDto.MemberId), editGroupMemberDto.RoleName);
+                }
+            }
+            catch
+            {
+                return new JsonResult("Changes not applied, something went wrong!");
+            }
+
+            return new JsonResult("Changes applied successfuly.");
         }
     }
 }

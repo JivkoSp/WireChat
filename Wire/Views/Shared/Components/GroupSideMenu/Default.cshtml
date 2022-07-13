@@ -31,8 +31,8 @@
             <div class="col">
                 <button id="GroupOptionsClose" type="button" class="btn-close btn-close float-right mt-1" aria-label="Close"></button>
                 <p class="text-center shadow rounded h5 w-25 m-auto">Group Options</p>
-                <div class="row">
-                    <div class="col col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                <div id="GroupOptionsContainer" class="row">
+                    <div id="JoinFriendSection" class="col col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                         <div class="input-group">
                             <input id="FriendContact" type="text" class="form-control" placeholder="&#xF002; Search"
                                  style="font-family:Arial, FontAwesome"  aria-describedby="JoinFriend">
@@ -49,9 +49,38 @@
                                         <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="friend-contact">
                                     </div>
                                     <p class="name-time">@friend.AppUser.UserName</p>
-                                </li>
+                                </li> 
                             }
                         </ul>
+                    </div>
+                    <div id="EditMemberSection" style="height:50vh; overflow-y:auto;" class="col mt-3">
+                        <table class="table  table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th style="position:sticky; top:0;" scope="col"><i class="bi bi-people-fill"></i></th>
+                                    <th style="position:sticky; top:0;" scope="col"><i class="bi bi-filter-square pr-1"></i>Name</th>
+                                    <th style="position:sticky; top:0;" scope="col"><i class="bi bi-lightning-fill pr-1"></i>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int memberNum = 1;
+                                    foreach (var member in Model.Members)
+                                    {
+                                        <tr>
+                                            <th scope="row">@memberNum</th>
+                                            <td>@member.AppUser.UserName</td>
+                                            <td><a asp-controller="Group" asp-action="EditGroupMember" asp-route-memberId="@member.AppUser.Id"
+                                                   asp-route-chatId="@ViewContext.HttpContext.Request.Query["ChatId"]"
+                                                   class="btn btn-dark btn-outline-light">Edit member
+                                                <i class="bi bi-journal-text pl-2"></i></a>
+                                            </td>
+                                        </tr>
+                                        memberNum++;
+                                    }
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -120,7 +149,6 @@
                 }
             });
         });
-
     });
 
 </script>

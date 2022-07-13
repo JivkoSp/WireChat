@@ -1,0 +1,24 @@
+﻿@model GroupMemberViewModel
+
+
+<div style="background-color:rgb(36, 33, 33);" class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2 shadow">
+        
+        <p class="text-white text-center mt-5">Group Members</p>
+
+        <ul id="MemberList" style="height:70vh; margin-top:4vh;" class="users overflow-auto">
+            @foreach (var friend in Model.Members)
+            {
+                <li class="person" style="border-color:rgb(51, 45, 45);">
+                    <a asp-controller="Chat" asp-action="ChatRoom" asp-route-ChatId="@friend.ChatId" class="user">
+                        <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="friend-contact">
+                        <span class="status busy bg-warning"></span>
+                    </a>
+                    <p class="name-time">
+                        <span class="name text-white">@friend.AppUser.UserName</span>
+                        <span class="time font"></span>
+                    </p>
+                </li>
+            }
+        </ul>
+
+</div>

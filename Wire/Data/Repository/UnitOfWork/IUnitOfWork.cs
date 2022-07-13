@@ -18,6 +18,8 @@ namespace Wire.Data.Repository.UnitOfWork
         IGroupTypeRepo GroupTypeRepo { get; }
         IChatTopicRepo ChatTopicRepo { get; }
         IGroupPendingRequestRepo GroupPendingRequestRepo { get; }
+        IGroupRepo GroupRepo { get; }
+        IBannGroupMemberRepo BannGroupMemberRepo { get; }
         Task SaveChangesAsync();
     }
 }

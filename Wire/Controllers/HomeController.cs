@@ -74,17 +74,21 @@ namespace Wire.Controllers
 
                     if (chatType == "Public")
                     {
-                        pendingRequest = new PendingRequest
+                        if (!UnitOfWork.BannGroupMemberRepo.isUserBanned(chatId, receiver.Id))
                         {
-                            SenderId = senderId,
-                            ReceiverId = receiver.Id,
-                            ChatType = chatType,
-                            SenderName = User.Identity.Name,
-                            GroupPendingRequest = new GroupPendingRequest
+                            pendingRequest = new PendingRequest
                             {
-                                ChatId = chatId
-                            }
-                        };
+                                SenderId = senderId,
+                                ReceiverId = receiver.Id,
+                                ChatType = chatType,
+                                SenderName = User.Identity.Name,
+                                GroupPendingRequest = new GroupPendingRequest
+                                {
+                                    ChatId = chatId
+                                }
+                            };
+                        }
+                        else return RedirectToAction("HomePage");
                     }
                     else
                     {

@@ -25,6 +25,7 @@ namespace Wire.Data
         public virtual DbSet<GroupType> GroupTypes { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupPendingRequest> GroupPendingRequests { get; set; }
+        public virtual DbSet<BannGroupMember> BannGroupMembers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -180,6 +181,17 @@ namespace Wire.Data
                 .HasForeignKey<GroupPendingRequest>(prop => prop.ChatId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Chat_GroupPendingRequest");
+            });
+
+            modelBuilder.Entity<BannGroupMember>(builder => {
+
+                builder.ToTable("BannGroupMember");
+            
+                builder.HasOne(prop => prop.Chat)
+                .WithMany(prop => prop.BannGroupMembers)
+                .HasForeignKey(prop => prop.ChatId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Chat_BannGroupMembers");
             });
         }
     }
