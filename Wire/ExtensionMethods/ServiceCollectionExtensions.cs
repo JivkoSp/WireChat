@@ -24,10 +24,12 @@ namespace Wire.ExtensionMethods
             services.AddScoped<IChatTopicRepo, ChatTopicRepo>();
             services.AddScoped<IGroupPendingRequestRepo, GroupPendingRequestRepo>();
             services.AddScoped<IGroupRepo, GroupRepo>();
-            services.AddScoped<IBannGroupMemberRepo, BannGroupMemberRepo>();
+            services.AddScoped<IBannMemberRepo, BannMemberRepo>();
             services.AddScoped<IMessageTimeToLiveRepo, MessageTimeToLiveRepo>();
             services.AddScoped<IAnonymUserRepo, AnonymUserRepo>();
             services.AddScoped<IProfilePictureRepo, ProfilePictureRepo>();
+            services.AddScoped<IBannTypeRepo, BannTypeRepo>();
+            services.AddScoped<IActiveChatRepo, ActiveChatRepo>();
         }
     }
 }

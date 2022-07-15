@@ -16,6 +16,8 @@ namespace Wire.AutomapperProfiles
         {
             CreateMap<PendingRequest, PendingRequestDto>();
             CreateMap<PendingRequestDto, PendingRequest>();
+            CreateMap<PendingRequestDto, BannMember>()
+                .ForMember(dest => dest.BannMemberId, opt => opt.MapFrom(src => src.PendingRequestId));
         }
     }
 }

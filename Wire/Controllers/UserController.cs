@@ -2,10 +2,16 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NETCore.MailKit.Core;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Wire.Data.Repository.UnitOfWork;
+using Wire.Hubs;
 using Wire.Models;
 using Wire.Models.Dtos;
 using Wire.Models.ViewModels;
@@ -204,6 +210,74 @@ namespace Wire.Controllers
                 return new JsonResult("Profile changes are applied");
             }
             return new JsonResult("Changes are not applied, something went wrong!");
+        }
+
+        public IActionResult Online()
+        {
+            var onlineContacts = ChatHub.GetConnectedUsers();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = UserManager.Users.Where(u => u.Id == userId)
+                .Include(u => u.ProfilePicture).FirstOrDefault();
+
+            var onlineFriends = UnitOfWork.FriendRepo
+                .GetOnlineFriends(onlineContacts.Values, user.Id).ToList();
+            onlineFriends.Add(user);
+
+            return View(onlineFriends);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> BannContact(string UserId)
+        {
+            try
+            {
+                string thisUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (UserId != thisUserId)
+                {
+                    var Chat = UnitOfWork.UserChatRepo.GetPrivateChat(thisUserId, UserId);
+
+                    BannMember bannedMember = new BannMember
+                    {
+                        ChatId = Chat.ChatId,
+                        AppUserId = UserId,
+                        BannTypeId = UnitOfWork.BannTypeRepo.GetBannTypeId("Private"),
+                        IssuedById = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    };
+
+                    await UnitOfWork.BannMemberRepo.AddAsync(bannedMember);
+                    UnitOfWork.ChatRepo.Remove(Chat);
+
+                    var frinedContact = UnitOfWork.FriendRepo
+                        .GetFriendContact(User.FindFirstValue(ClaimTypes.NameIdentifier), UserId);
+
+                    UnitOfWork.FriendRepo.RemoveRange(frinedContact);
+                    await UnitOfWork.SaveChangesAsync();
+                }
+                else
+                {
+                    return new JsonResult("Changes are not applied, users cant ban themself!");
+                }
+            }
+            catch
+            {
+                return new JsonResult("Changes are not applied, something went wrong!");
+            }
+            
+            return new JsonResult("Changes are applied.");
+        }
+
+        public IActionResult BannedUsers()
+        {
+           string userId = UserManager.GetUserId(User);
+           return View(UnitOfWork.BannMemberRepo.GetBannMembers(userId));
+        }
+
+        [HttpPost]
+        public JsonResult BannedUsers(BannMemberDto bannMemberDto)
+        {
+            return new JsonResult(bannMemberDto);
         }
     }
 }

@@ -25,10 +25,12 @@ namespace Wire.Data
         public virtual DbSet<GroupType> GroupTypes { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupPendingRequest> GroupPendingRequests { get; set; }
-        public virtual DbSet<BannGroupMember> BannGroupMembers { get; set; }
+        public virtual DbSet<BannType> BannTypes { get; set; }
+        public virtual DbSet<BannMember> BannMembers { get; set; }
         public virtual DbSet<MessageTimeToLive> MessageTimeToLives { get; set; }
         public virtual DbSet<AnonymUser> AnonymUsers { get; set; }
         public virtual DbSet<ProfilePicture> ProfilePictures { get; set; }
+        public virtual DbSet<ActiveChat> ActiveChats { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -190,21 +192,38 @@ namespace Wire.Data
                 .HasConstraintName("FK_PendingRequest_GroupPendingRequest");
 
                 builder.HasOne(prop => prop.Chat)
-                .WithOne(prop => prop.GroupPendingRequest)
-                .HasForeignKey<GroupPendingRequest>(prop => prop.ChatId)
+                .WithMany(prop => prop.GroupPendingRequests)
+                .HasForeignKey(prop => prop.ChatId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Chat_GroupPendingRequest");
             });
 
-            modelBuilder.Entity<BannGroupMember>(builder => {
+            modelBuilder.Entity<BannType>(builder => {
 
-                builder.ToTable("BannGroupMember");
-            
-                builder.HasOne(prop => prop.Chat)
-                .WithMany(prop => prop.BannGroupMembers)
-                .HasForeignKey(prop => prop.ChatId)
+                builder.ToTable("BannType");
+
+                builder.Property(prop => prop.Type)
+                  .HasMaxLength(50)
+                  .IsRequired();
+            });
+
+            modelBuilder.Entity<BannMember>(builder => {
+
+                builder.ToTable("BannMember");
+
+                builder.HasIndex(prop => prop.IssuedById);
+
+                builder.HasOne(prop => prop.BannType)
+                .WithMany(prop => prop.BannMembers)
+                .HasForeignKey(prop => prop.BannTypeId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Chat_BannGroupMembers");
+                .HasConstraintName("FK_BannType_BannMembers");
+
+                builder.HasOne(prop => prop.AppUser)
+                .WithMany(prop => prop.BannMembers)
+                .HasForeignKey(prop => prop.AppUserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_AppUser_BannMembers");
             });
 
             modelBuilder.Entity<MessageTimeToLive>(builder => {
@@ -239,6 +258,23 @@ namespace Wire.Data
 
                 builder.Property(p => p.Picture)
                .HasColumnType("image");
+            });
+
+            modelBuilder.Entity<ActiveChat>(builder => {
+
+                builder.ToTable("ActiveChat");
+
+                builder.HasKey(prop => prop.ChatId);
+
+                builder.Property(prop => prop.DateTime)
+                .HasColumnType("datetime2")
+                .IsRequired();
+
+                builder.HasOne(prop => prop.Chat)
+                .WithOne(prop => prop.ActiveChat)
+                .HasForeignKey<ActiveChat>(prop => prop.ChatId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Chat_ActiveChat");
             });
         }
     }

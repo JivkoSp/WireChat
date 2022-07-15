@@ -56,5 +56,18 @@ namespace Wire.Data.Repository.Repositories
             WireChatDbContext.UserChats.Remove(
                 WireChatDbContext.UserChats.FirstOrDefault(u => u.ChatId == chatId));
         }
+
+        public Chat GetPrivateChat(string thisUserId, string otherUserId)
+        {
+            return WireChatDbContext.UserChats
+                     .Include(u => u.Chat)
+                     .ThenInclude(chat => chat.ChatType)
+                     .Where(u => u.AppUserId == thisUserId && u.Chat.ChatType.ChatName == "Private")
+                     .Join(WireChatDbContext.UserChats, u => u.ChatId, f => f.ChatId,
+                         (u, f) => new { User = u, Friend = f })
+                     .Where(c => c.Friend.AppUserId != c.User.AppUserId
+                     && c.User.AppUserId == thisUserId && c.Friend.AppUserId == otherUserId)
+                     .Select(prop => prop.User.Chat).FirstOrDefault();
+        }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Wire.Data;
 
 namespace Wire.Migrations
 {
     [DbContext(typeof(WireChatDbContext))]
-    partial class WireChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220725062327_ActiveChat-Datetime-formatToDbAdded")]
+    partial class ActiveChatDatetimeformatToDbAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

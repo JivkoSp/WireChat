@@ -1,0 +1,90 @@
+﻿@model ActiveChatViewModel
+
+<div class="col-md-3 col-sm-2 text-white bg-dark border-top border-info">
+    <ul id="ActiveChatList" class="list-group mt-5">
+
+        @foreach (var activeChat in Model.ActiveChats)
+        {
+            <li id="@activeChat.ChatId" 
+                class="list-group-item btn-light btn-outline-dark border-bottom border-1 text-center font-weight-bold pb-3 pt-3">
+                <a asp-controller="Chat" asp-action="ChatRoom" asp-route-ChatId="@activeChat.ChatId"
+                   asp-route-roomType="Public"
+                   class="text-decoration-none">
+                <i class="bi bi-broadcast float-left online-user"></i> @activeChat.Chat.Group.GroupName
+                </a>             
+            </li>
+        }
+    </ul>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub").build();
+
+        connection.start().then(() => {
+
+            @foreach(var group in Model.Groups)
+            {
+                @:try
+                @:{
+                    @:connection.invoke("JoinGroup", "@group.ChatId");
+                @:}
+                @:catch (err)
+                @:{
+                    @:console.error(err);
+                @:}
+            }
+
+            connection.on("ActiveChat", (message) => {
+
+                let aElement = document.createElement("a");
+                aElement.setAttribute("href", `/Chat/ChatRoom?ChatId=${message.chatId}&roomType=Public`);
+                aElement.setAttribute("class", "text-decoration-none");
+                aElement.innerHTML = `<i class="bi bi-broadcast float-left online-user"></i>`;
+                aElement.innerHTML += message.chatName;
+
+                let liElement = document.createElement("li");
+                liElement.setAttribute("id", `${message.chatId}`);
+                liElement.setAttribute("class",
+                    "list-group-item btn-light btn-outline-dark border-bottom border-1 text-center font-weight-bold pb-3 pt-3");
+                liElement.appendChild(aElement);
+
+                document.getElementById("ActiveChatList").appendChild(liElement);
+            });
+
+            setInterval(function () {
+                try {
+                    connection.invoke("NonActiveChats");
+                } catch (err) {
+                    console.error(err);
+                }
+            }, 5000);
+
+            connection.on("NonActiveChats", (messages) => {
+
+                for (let i = 0; i < messages.length; i++) {
+
+                    removeElement(messages[i].chatId);
+                }
+            });
+
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        function removeElement(id) {
+
+            var elem = document.getElementById(id);
+
+            if (elem != null) {
+                elem.parentNode.removeChild(elem);
+            }
+        }
+    });
+
+</script>
+

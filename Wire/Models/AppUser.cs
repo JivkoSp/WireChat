@@ -13,6 +13,7 @@ namespace Wire.Models
             Friends = new HashSet<Friend>();
             PendingRequests = new HashSet<PendingRequest>();
             UserChats = new HashSet<UserChat>();
+            BannMembers = new HashSet<BannMember>();
         }
 
         public int? ProfilePictureId { get; set; }
@@ -20,6 +21,7 @@ namespace Wire.Models
         public virtual MessageTimeToLive MessageTimeToLive { get; set; }
         public virtual AnonymUser AnonymUser { get; set; }
         public virtual ProfilePicture ProfilePicture { get; set; }
+        public virtual ICollection<BannMember> BannMembers { get; set; }
         public virtual ICollection<Friend> Friends { get; set; }
         public virtual ICollection<PendingRequest> PendingRequests { get; set; }
         public virtual ICollection<UserChat> UserChats { get; set; }

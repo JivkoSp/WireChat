@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Wire.Data;
 
 namespace Wire.Migrations
 {
     [DbContext(typeof(WireChatDbContext))]
-    partial class WireChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220723092723_BannMember-AppUserRelationship-Corrected")]
+    partial class BannMemberAppUserRelationshipCorrected
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,19 +152,6 @@ namespace Wire.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Wire.Models.ActiveChat", b =>
-                {
-                    b.Property<int>("ChatId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ChatId");
-
-                    b.ToTable("ActiveChat");
-                });
-
             modelBuilder.Entity("Wire.Models.AnonymUser", b =>
                 {
                     b.Property<string>("AppUserId")
@@ -267,6 +256,9 @@ namespace Wire.Migrations
                     b.HasIndex("AppUserId");
 
                     b.HasIndex("BannTypeId");
+
+                    b.HasIndex("ChatId")
+                        .IsUnique();
 
                     b.HasIndex("IssuedById");
 
@@ -405,7 +397,8 @@ namespace Wire.Migrations
 
                     b.HasKey("PendingRequestId");
 
-                    b.HasIndex("ChatId");
+                    b.HasIndex("ChatId")
+                        .IsUnique();
 
                     b.ToTable("GroupPendingRequest");
                 });
@@ -583,18 +576,6 @@ namespace Wire.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Wire.Models.ActiveChat", b =>
-                {
-                    b.HasOne("Wire.Models.Chat", "Chat")
-                        .WithOne("ActiveChat")
-                        .HasForeignKey("Wire.Models.ActiveChat", "ChatId")
-                        .HasConstraintName("FK_Chat_ActiveChat")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chat");
-                });
-
             modelBuilder.Entity("Wire.Models.AnonymUser", b =>
                 {
                     b.HasOne("Wire.Models.AppUser", "AppUser")
@@ -633,9 +614,18 @@ namespace Wire.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Wire.Models.Chat", "Chat")
+                        .WithOne("BannMember")
+                        .HasForeignKey("Wire.Models.BannMember", "ChatId")
+                        .HasConstraintName("FK_Chat_BannMember")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AppUser");
 
                     b.Navigation("BannType");
+
+                    b.Navigation("Chat");
                 });
 
             modelBuilder.Entity("Wire.Models.Chat", b =>
@@ -697,8 +687,8 @@ namespace Wire.Migrations
             modelBuilder.Entity("Wire.Models.GroupPendingRequest", b =>
                 {
                     b.HasOne("Wire.Models.Chat", "Chat")
-                        .WithMany("GroupPendingRequests")
-                        .HasForeignKey("ChatId")
+                        .WithOne("GroupPendingRequest")
+                        .HasForeignKey("Wire.Models.GroupPendingRequest", "ChatId")
                         .HasConstraintName("FK_Chat_GroupPendingRequest")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -793,13 +783,13 @@ namespace Wire.Migrations
 
             modelBuilder.Entity("Wire.Models.Chat", b =>
                 {
-                    b.Navigation("ActiveChat");
+                    b.Navigation("BannMember");
 
                     b.Navigation("ChatTopic");
 
                     b.Navigation("Group");
 
-                    b.Navigation("GroupPendingRequests");
+                    b.Navigation("GroupPendingRequest");
 
                     b.Navigation("Messages");
 

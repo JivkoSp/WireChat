@@ -11,5 +11,7 @@ namespace Wire.Data.Repository.Interfaces
     {
         bool isFriend(string senderId, string receiverId);
         IEnumerable<Friend> GetFriends(string userId);
+        IEnumerable<Friend> GetFriendContact(string senderId, string receiverId);
+        IEnumerable<AppUser> GetOnlineFriends(ICollection<AppUser> appUsers, string userId);
     }
 }

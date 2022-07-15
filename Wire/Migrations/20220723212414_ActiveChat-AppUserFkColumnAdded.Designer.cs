@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Wire.Data;
 
 namespace Wire.Migrations
 {
     [DbContext(typeof(WireChatDbContext))]
-    partial class WireChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220723212414_ActiveChat-AppUserFkColumnAdded")]
+    partial class ActiveChatAppUserFkColumnAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,10 +157,15 @@ namespace Wire.Migrations
                     b.Property<int>("ChatId")
                         .HasColumnType("int");
 
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("ChatId");
+
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("ActiveChat");
                 });
@@ -405,7 +412,8 @@ namespace Wire.Migrations
 
                     b.HasKey("PendingRequestId");
 
-                    b.HasIndex("ChatId");
+                    b.HasIndex("ChatId")
+                        .IsUnique();
 
                     b.ToTable("GroupPendingRequest");
                 });
@@ -585,12 +593,20 @@ namespace Wire.Migrations
 
             modelBuilder.Entity("Wire.Models.ActiveChat", b =>
                 {
+                    b.HasOne("Wire.Models.AppUser", "AppUser")
+                        .WithMany("ActiveChats")
+                        .HasForeignKey("AppUserId")
+                        .HasConstraintName("FK_AppUser_ActiveChats")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Wire.Models.Chat", "Chat")
                         .WithOne("ActiveChat")
                         .HasForeignKey("Wire.Models.ActiveChat", "ChatId")
                         .HasConstraintName("FK_Chat_ActiveChat")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AppUser");
 
                     b.Navigation("Chat");
                 });
@@ -697,8 +713,8 @@ namespace Wire.Migrations
             modelBuilder.Entity("Wire.Models.GroupPendingRequest", b =>
                 {
                     b.HasOne("Wire.Models.Chat", "Chat")
-                        .WithMany("GroupPendingRequests")
-                        .HasForeignKey("ChatId")
+                        .WithOne("GroupPendingRequest")
+                        .HasForeignKey("Wire.Models.GroupPendingRequest", "ChatId")
                         .HasConstraintName("FK_Chat_GroupPendingRequest")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -773,6 +789,8 @@ namespace Wire.Migrations
 
             modelBuilder.Entity("Wire.Models.AppUser", b =>
                 {
+                    b.Navigation("ActiveChats");
+
                     b.Navigation("AnonymUser");
 
                     b.Navigation("BannMembers");
@@ -799,7 +817,7 @@ namespace Wire.Migrations
 
                     b.Navigation("Group");
 
-                    b.Navigation("GroupPendingRequests");
+                    b.Navigation("GroupPendingRequest");
 
                     b.Navigation("Messages");
 

@@ -1,0 +1,100 @@
+﻿@model IEnumerable<BannMember>
+
+<section class="container-fluid">
+    <div id="HomePage-Container" class="row HomePage-Container">
+        <vc:side-menu room-type="" />
+        <div class="col text-white bg-dark border-top border-right border-info PendingList-Container overflow-auto">
+            <ul class="list-group mt-3">
+
+                @foreach (var bannedUser in Model)
+                {
+                <li id="@bannedUser.BannMemberId" style="width:85%;" class="list-group-item bg-light border-bottom border-4 m-auto">
+                    <form asp-controller="User" asp-action="BannedUsers"
+                          data-ajax="true" data-ajax-complete="RemoveBlockedUserPosted" method="post">
+
+                        <input type="hidden" name="BannMemberId" value="@bannedUser.BannMemberId"/>
+                        <input type="hidden" name="AppUserId" value="@bannedUser.AppUserId"/>
+                        <input type="hidden" name="IssuedById" value="@bannedUser.IssuedById"/>
+                        <input type="hidden" name="BannType" value="@bannedUser.BannType.Type"/>
+
+                        <div class="d-flex w-100 justify-content-between">
+                            <div class="profile-picture col-xl-2 col-lg-3 col-md-4 col-sm-5 col-5 rounded shadow">
+
+                                @if (bannedUser.AppUser.ProfilePicture != null)
+                                {
+                                    <img src="data:image/jpeg;base64,
+                                             @Convert.ToBase64String(bannedUser.AppUser.ProfilePicture.Picture)"
+                                         class="img-fluid" />
+                                }
+                                else
+                                {
+                                    <div class="text-center mt-1">
+                                        <i class="bi bi-robot h1 text-white"></i>
+                                    </div>
+                                }
+                                <div class="text-white w-100 text-center pb-1">@bannedUser.AppUser.UserName</div>
+                            </div>
+                            <p style="overflow:auto;" class="mb-2 bg-warning rounded text-center col-xl-7 col-lg-6 col-md-5 col-sm-5 col-4">
+                                Chat Type: @bannedUser.BannType.Type
+                            </p>
+                            <span style="font-size:80%">3 days ago</span>
+                        </div>
+                        <div style="font-size:90%;" class="mt-2 text-center">
+                            <button class="btn btn-dark">Remove block</button>
+                        </div>
+                    </form>                
+                </li>
+                }
+
+            </ul>
+        </div>
+        <vc:activity-menu />
+    </div>
+</section>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        RemoveBlockedUserPosted = function (xhr) {
+
+            if (xhr.responseJSON.bannType == "Private") {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Chat/CreatePrivateChat',
+                    data: {
+                        "PendingRequestId": xhr.responseJSON.bannMemberId,
+                        "SenderId": xhr.responseJSON.issuedById,
+                        "ReceiverId": xhr.responseJSON.appUserId,
+                        "Action": "RemoveBlock"
+                    },
+                    success: function (response) {
+                        removeElement(response.pendingRequestId);
+                    },
+                    failure: function (response) {
+                        console.log("Fail", response);
+                    },
+                    error: function (response) {
+                        console.log("Error", response);
+                    }
+                });
+            }
+            else {
+
+            }
+        };
+
+        function removeElement(id) {
+
+            var elem = document.getElementById(id);
+
+            if (elem != null) {
+                elem.parentNode.removeChild(elem);
+            }
+        }
+
+    });
+
+</script>

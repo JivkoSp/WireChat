@@ -73,15 +73,21 @@ namespace Wire.Controllers
 
                 await UnitOfWork.UserChatRepo.AddRangeAsync(new List<UserChat> { newSenderChat, newReceiverChat });
 
-                UnitOfWork.PendingRequestRepo.Remove(Mapper.Map<PendingRequest>(requestDto));
-
+                if(requestDto.Action == "RemoveBlock")
+                {
+                    UnitOfWork.BannMemberRepo.Remove(Mapper.Map<BannMember>(requestDto));
+                }
+                else
+                {
+                    UnitOfWork.PendingRequestRepo.Remove(Mapper.Map<PendingRequest>(requestDto));
+                }
+                
                 await UnitOfWork.SaveChangesAsync();
 
                 GroupDto groupDto = new GroupDto
                 {
                     ChatId = privateChat.ChatId
                 };
-
 
                 groupDto.GroupName = User.Identity.Name;
                 await HubContext.Clients.User(requestDto.SenderId).SendAsync("AddToPrivateChat", requestDto.SenderId, groupDto);
@@ -93,9 +99,7 @@ namespace Wire.Controllers
                 Console.WriteLine(ex.Message);
             }
 
-            string redirectUrl = Url.Action("PendingRequests", "Home");
-
-            return new JsonResult(new { redirectUrl });
+            return new JsonResult(new { requestDto.PendingRequestId });
         }
 
         public IActionResult ChatRoom(int ChatId, string roomType="Private")
@@ -139,7 +143,32 @@ namespace Wire.Controllers
 
                     await UnitOfWork.MessageRepo.AddAsync(Message);
                     await UnitOfWork.SaveChangesAsync();
-                }       
+                }
+
+                var activeChat = await UnitOfWork.ActiveChatRepo.FindAsync(new object[] { chatId });
+
+                if(activeChat != null)
+                {
+                    activeChat.DateTime = DateTime.Now.AddSeconds(30);
+                    UnitOfWork.ActiveChatRepo.Update(activeChat);
+                }
+                else
+                {
+                    ActiveChat newActiveChat = new ActiveChat
+                    {
+                        ChatId = chatId,
+                        DateTime = DateTime.Now.AddSeconds(30)
+                    };
+
+                    await UnitOfWork.ActiveChatRepo.AddAsync(newActiveChat);
+                    activeChat = newActiveChat;
+                }
+
+                await UnitOfWork.SaveChangesAsync();
+
+                activeChat.Chat = UnitOfWork.ChatRepo.GetChat(chatId);
+                await HubContext.Clients.Group(chatId.ToString())
+                    .SendAsync("ActiveChat", Mapper.Map<ActiveChatDto>(activeChat));
             }
             catch(Exception ex)
             {

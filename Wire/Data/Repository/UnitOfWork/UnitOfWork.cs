@@ -20,16 +20,19 @@ namespace Wire.Data.Repository.UnitOfWork
         public IChatTopicRepo ChatTopicRepo { get; private set; }
         public IGroupPendingRequestRepo GroupPendingRequestRepo { get; private set; }
         public IGroupRepo GroupRepo { get; private set; }
-        public IBannGroupMemberRepo BannGroupMemberRepo { get; private set; }
+        public IBannMemberRepo BannMemberRepo { get; private set; }
         public IMessageTimeToLiveRepo MessageTimeToLiveRepo { get; private set; }
         public IAnonymUserRepo AnonymUserRepo { get; private set; }
         public IProfilePictureRepo ProfilePictureRepo { get; private set; }
+        public IBannTypeRepo BannTypeRepo { get; private set; }
+        public IActiveChatRepo ActiveChatRepo { get; private set; }
 
         public UnitOfWork(WireChatDbContext dbContext, IAppUserRepo userRepo, IPendingRequestRepo pendingRequestRepo,
             IFriendRepo friendRepo, IChatTypeRepo chatTypeRepo, IChatRepo chatRepo, IUserChatRepo userChatRepo,
             IMessageRepo messageRepo, IGroupTypeRepo groupTypeRepo, IChatTopicRepo chatTopicRepo,
-            IGroupPendingRequestRepo groupPendingRequestRepo, IGroupRepo groupRepo, IBannGroupMemberRepo bannGroupMemberRepo,
-            IMessageTimeToLiveRepo messageTimeToLiveRepo, IAnonymUserRepo anonymUserRepo, IProfilePictureRepo profilePictureRepo)
+            IGroupPendingRequestRepo groupPendingRequestRepo, IGroupRepo groupRepo, IBannMemberRepo bannMemberRepo,
+            IMessageTimeToLiveRepo messageTimeToLiveRepo, IAnonymUserRepo anonymUserRepo, IProfilePictureRepo profilePictureRepo,
+            IBannTypeRepo bannTypeRepo, IActiveChatRepo activeChatRepo)
         {
             WireChatDbContext = dbContext;
             UserRepo = userRepo;
@@ -43,10 +46,12 @@ namespace Wire.Data.Repository.UnitOfWork
             ChatTopicRepo = chatTopicRepo;
             GroupPendingRequestRepo = groupPendingRequestRepo;
             GroupRepo = groupRepo;
-            BannGroupMemberRepo = bannGroupMemberRepo;
+            BannMemberRepo = bannMemberRepo;
             MessageTimeToLiveRepo = messageTimeToLiveRepo;
             AnonymUserRepo = anonymUserRepo;
             ProfilePictureRepo = profilePictureRepo;
+            BannTypeRepo = bannTypeRepo;
+            ActiveChatRepo = activeChatRepo;
         }
 
         public async Task SaveChangesAsync()

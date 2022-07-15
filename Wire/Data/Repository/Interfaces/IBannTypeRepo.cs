@@ -7,8 +7,8 @@ using Wire.Models;
 
 namespace Wire.Data.Repository.Interfaces
 {
-    public interface IChatRepo : IGenericRepo<Chat>
+    public interface IBannTypeRepo : IGenericRepo<BannType>
     {
-        Chat GetChat(int chatId);
+        public int GetBannTypeId(string type);
     }
 }

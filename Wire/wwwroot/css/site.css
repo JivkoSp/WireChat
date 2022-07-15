@@ -510,3 +510,16 @@ ul {
 .profile-picture:hover{
     background-color:rgb(63, 57, 57);
 }
+
+.online-user{
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse{
+    0%{
+        transform: scale(0.5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

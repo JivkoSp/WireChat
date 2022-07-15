@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Wire.Data.Repository.UnitOfWork;
 using Wire.Hubs;
@@ -124,13 +125,15 @@ namespace Wire.Controllers
                 {
                     UnitOfWork.UserChatRepo.DeleteEntry(editGroupMemberDto.ChatId);
 
-                    BannGroupMember groupMember = new BannGroupMember
+                    BannMember groupMember = new BannMember
                     {
                         ChatId = editGroupMemberDto.ChatId,
-                        AppUserId = editGroupMemberDto.MemberId
+                        AppUserId = editGroupMemberDto.MemberId,
+                        BannTypeId = UnitOfWork.BannTypeRepo.GetBannTypeId("Group"),
+                        IssuedById = User.FindFirstValue(ClaimTypes.NameIdentifier)
                     };
 
-                    await UnitOfWork.BannGroupMemberRepo.AddAsync(groupMember);
+                    await UnitOfWork.BannMemberRepo.AddAsync(groupMember);
                     await UnitOfWork.SaveChangesAsync();
                 }
                 else

@@ -21,7 +21,7 @@ namespace Wire.Controllers
         private IUnitOfWork UnitOfWork;
         private IHubContext<NotificationHub> HubContext;
         private IMapper Mapper;
-
+        
         private bool ValidPrivatePendingRequest(string senderId, string receiverId, string chatType)
         {
             if(chatType == "Private" && !UnitOfWork.FriendRepo.isFriend(senderId, receiverId) &&
@@ -74,7 +74,7 @@ namespace Wire.Controllers
 
                     if (chatType == "Public")
                     {
-                        if (!UnitOfWork.BannGroupMemberRepo.isUserBanned(chatId, receiver.Id))
+                        if (!UnitOfWork.BannMemberRepo.isUserBannedFromGroup(chatId, receiver.Id))
                         {
                             pendingRequest = new PendingRequest
                             {
@@ -90,7 +90,7 @@ namespace Wire.Controllers
                         }
                         else return RedirectToAction("HomePage");
                     }
-                    else
+                    else if(!UnitOfWork.BannMemberRepo.isUserBannedFromContact(receiver.Id, senderId))
                     {
                         pendingRequest = new PendingRequest
                         {

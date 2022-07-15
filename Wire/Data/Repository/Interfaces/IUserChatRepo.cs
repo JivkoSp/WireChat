@@ -11,6 +11,7 @@ namespace Wire.Data.Repository.Interfaces
     {
         List<UserChat> GetContactFriends(string userId);
         IEnumerable<Group> GetGroups(string userId);
+        Chat GetPrivateChat(string thisUserId, string otherUserId);
         bool isMember(string userId, int chatId);
         void DeleteEntry(int chatId);
     }

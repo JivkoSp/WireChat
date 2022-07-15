@@ -17,12 +17,14 @@ namespace Wire.Data.Repository.UnitOfWork
         IMessageRepo MessageRepo { get; }
         IGroupTypeRepo GroupTypeRepo { get; }
         IChatTopicRepo ChatTopicRepo { get; }
+        IBannTypeRepo BannTypeRepo { get; }
         IGroupPendingRequestRepo GroupPendingRequestRepo { get; }
         IGroupRepo GroupRepo { get; }
-        IBannGroupMemberRepo BannGroupMemberRepo { get; }
+        IBannMemberRepo BannMemberRepo { get; }
         IMessageTimeToLiveRepo MessageTimeToLiveRepo { get; }
         IAnonymUserRepo AnonymUserRepo { get; }
         IProfilePictureRepo ProfilePictureRepo { get; }
+        IActiveChatRepo ActiveChatRepo { get; }
         Task SaveChangesAsync();
     }
 }

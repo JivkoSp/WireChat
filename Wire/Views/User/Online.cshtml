@@ -1,0 +1,73 @@
+﻿@model List<AppUser>
+
+<section class="container-fluid">
+    <div id="HomePage-Container" class="row HomePage-Container">
+        <vc:side-menu room-type="" />
+        <div class="col text-white bg-dark border-top border-right border-info PendingList-Container overflow-auto">
+            <ul class="list-group mt-3">
+
+                @foreach (var user in Model)
+                {
+                    <li style="width:85%;" class="list-group-item bg-light border-bottom border-4 m-auto">
+                        <div class="d-flex w-100 justify-content-between">
+                            <div class="profile-picture col-xl-3 col-lg-4 col-md-5 col-sm-6 col-6 rounded shadow">
+
+                                @if (user.ProfilePicture != null)
+                                {
+                                    <img src="data:image/jpeg;base64,
+                                             @Convert.ToBase64String(user.ProfilePicture.Picture)"
+                                         class="img-fluid" />
+                                }
+                                else
+                                {
+                                    <div class="text-center mt-1">
+                                        <i class="bi bi-robot h1 text-white"></i>
+                                    </div>
+                                }
+                                <div class="text-white w-100 text-center pb-1">@user.UserName</div>
+                                <div style="position:absolute; top:0.2em; left:0.2em; width:1em; height:1em; border-radius:50%;"
+                                     class="bg-warning online-user">
+                                </div>
+                            </div>
+                            <p style="overflow:auto;" class="mb-1 ml-4 col-xl-7 col-lg-6 col-md-5 col-sm-5 col-4">
+                                Email: @user.Email <br />
+                                Phone: @if (!user.PhoneNumberConfirmed)
+                                {
+                                    <span>no phone provided</span>
+                                }
+                                else
+                                {
+                                    <span>@user.PhoneNumber</span>
+                                }
+                            </p>
+                            <span style="font-size:80%">3 days ago</span>
+                        </div>
+                        <div style="font-size:90%;" class="mt-2">
+                            <button style="font-size:80%;" class="btn btn-dark">View Profile</button>
+                            <form asp-controller="User" asp-action="BannContact" data-ajax="true"
+                                  data-ajax-complete="BannContactPosted" class="d-inline" method="post">
+                                <input type="hidden" name="UserId" value="@user.Id" />
+                                <button type="submit" style="font-size:80%;" class="btn btn-dark">Block</button>
+                            </form>
+                        </div>
+                    </li>
+                }
+
+            </ul>
+        </div>
+        <vc:activity-menu />
+    </div>
+</section>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        BannContactPosted = function(xhr){
+
+            alert(xhr.responseJSON);
+        };
+    });
+
+</script>

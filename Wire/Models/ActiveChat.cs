@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 
 namespace Wire.Models
 {
-    public class BannGroupMember
+    public class ActiveChat
     {
-        public int BannGroupMemberId { get; set; }
         public int ChatId { get; set; }
-        public string AppUserId { get; set; }
-        
+        public DateTime DateTime { get; set; }
+
         public virtual Chat Chat { get; set; }
     }
 }

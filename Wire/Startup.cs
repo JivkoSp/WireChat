@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,12 +69,14 @@ namespace Wire
 
             services.AddRepository();
             services.AddSignalR(opt => opt.EnableDetailedErrors = true);
+
             services.AddAntiforgery(config => config.HeaderName = "XSRF-TOKEN");
 
             services.AddAutoMapper(configAction => {
                 configAction.AddProfile<GroupProfile>();
                 configAction.AddProfile<FriendProfile>();
                 configAction.AddProfile<PendingRequestProfile>();
+                configAction.AddProfile<ActiveChatProfile>();
             });
         }
 

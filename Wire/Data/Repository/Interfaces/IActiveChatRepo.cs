@@ -7,8 +7,9 @@ using Wire.Models;
 
 namespace Wire.Data.Repository.Interfaces
 {
-    public interface IBannGroupMemberRepo : IGenericRepo<BannGroupMember>
+    public interface IActiveChatRepo : IGenericRepo<ActiveChat>
     {
-        bool isUserBanned(int chadId, string userId);
+        IEnumerable<ActiveChat> GetActiveChats(string userId);
+        IEnumerable<ActiveChat> GetGroupActiveChats(string userId);
     }
 }

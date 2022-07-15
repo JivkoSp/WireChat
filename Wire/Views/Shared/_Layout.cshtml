@@ -21,21 +21,23 @@
                     Groups
                     <i class="bi bi-people-fill"></i>
                 </button>
-                <button class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
+                <a style="text-decoration:none; display:block; border:solid;" asp-controller="User" asp-action="Online" 
+                   class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
                     <i class="bi bi-lightbulb-fill"></i>
                     Online
                     <span id="OnlineUsers" class="text-info pl-1"></span>
-                </button>
+                </a>
                 <a asp-controller="Home" asp-action="PendingRequests"
                    class="col-md text-center text-white text-decoration-none bg-dark p-3 pt-4 border border-right border-secondary">
                     <i class="bi bi-envelope-exclamation-fill"></i>
                     Pending
                     <vc:pending-requests />
                 </a>
-                <button class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
+                <a style="text-decoration:none; display:block; border:solid;" asp-controller="User" asp-action="BannedUsers" 
+                   class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
                    <i class="bi bi-shield-fill-exclamation"></i>
                     Blocked
-                </button>
+                </a>
                 <button id="AddFriend" class="col-md text-center text-info font-weight-bold border-secondary bg-dark p-3 pt-4">
                     Add Friend
                     <i class="bi bi-person-plus-fill"></i>
@@ -184,12 +186,12 @@
                     return console.error(err.toString());
                 });
 
-                var connection = new signalR.HubConnectionBuilder()
+                var notifyConnection = new signalR.HubConnectionBuilder()
                     .withUrl("/notificationHub").build();
 
-                connection.start().then(() => {
+                notifyConnection.start().then(() => {
 
-                    connection.on("PendingRequestReceived", () => {
+                    notifyConnection.on("PendingRequestReceived", () => {
 
                         let requests = Number(document.getElementById("PendingRequests").textContent);
                         requests += 1;

@@ -22,7 +22,7 @@ namespace Wire.Middlewares
 
             var oldMessages = messages.Where(m => m.MessageLifeTime.CompareTo(DateTime.Now) <= 0);
 
-            if(oldMessages != null)
+            if(oldMessages.Any())
             {
                 unitOfWork.MessageRepo.RemoveRange(oldMessages);
                 await unitOfWork.SaveChangesAsync();
