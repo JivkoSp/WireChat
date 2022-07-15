@@ -14,6 +14,10 @@
     {
       "library": "jquery-ajax-unobtrusive@3.2.6",
       "destination": "wwwroot/jquery-ajax-unobtrusive/"
+    },
+    {
+      "library": "qrcodejs@1.0.0",
+      "destination": "wwwroot/lib/qrcodejs/"
     }
   ]
 }

@@ -21,11 +21,15 @@ namespace Wire.Data.Repository.UnitOfWork
         public IGroupPendingRequestRepo GroupPendingRequestRepo { get; private set; }
         public IGroupRepo GroupRepo { get; private set; }
         public IBannGroupMemberRepo BannGroupMemberRepo { get; private set; }
+        public IMessageTimeToLiveRepo MessageTimeToLiveRepo { get; private set; }
+        public IAnonymUserRepo AnonymUserRepo { get; private set; }
+        public IProfilePictureRepo ProfilePictureRepo { get; private set; }
 
         public UnitOfWork(WireChatDbContext dbContext, IAppUserRepo userRepo, IPendingRequestRepo pendingRequestRepo,
             IFriendRepo friendRepo, IChatTypeRepo chatTypeRepo, IChatRepo chatRepo, IUserChatRepo userChatRepo,
             IMessageRepo messageRepo, IGroupTypeRepo groupTypeRepo, IChatTopicRepo chatTopicRepo,
-            IGroupPendingRequestRepo groupPendingRequestRepo, IGroupRepo groupRepo, IBannGroupMemberRepo bannGroupMemberRepo)
+            IGroupPendingRequestRepo groupPendingRequestRepo, IGroupRepo groupRepo, IBannGroupMemberRepo bannGroupMemberRepo,
+            IMessageTimeToLiveRepo messageTimeToLiveRepo, IAnonymUserRepo anonymUserRepo, IProfilePictureRepo profilePictureRepo)
         {
             WireChatDbContext = dbContext;
             UserRepo = userRepo;
@@ -40,6 +44,9 @@ namespace Wire.Data.Repository.UnitOfWork
             GroupPendingRequestRepo = groupPendingRequestRepo;
             GroupRepo = groupRepo;
             BannGroupMemberRepo = bannGroupMemberRepo;
+            MessageTimeToLiveRepo = messageTimeToLiveRepo;
+            AnonymUserRepo = anonymUserRepo;
+            ProfilePictureRepo = profilePictureRepo;
         }
 
         public async Task SaveChangesAsync()

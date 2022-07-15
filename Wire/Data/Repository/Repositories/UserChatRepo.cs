@@ -27,6 +27,7 @@ namespace Wire.Data.Repository.Repositories
                         (u, f) => new { User = u, Friend = f })
                     .Where(c => c.Friend.AppUserId != c.User.AppUserId)
                     .Select(chats => chats.Friend).Include(chats => chats.AppUser)
+                    .Include(chats => chats.AppUser.ProfilePicture)
                     .ToList();
             }           
             catch

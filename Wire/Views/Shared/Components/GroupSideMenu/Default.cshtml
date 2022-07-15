@@ -46,7 +46,15 @@
                             {
                                 <li class="person group-options-contacts">
                                     <div class="user">
-                                        <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="friend-contact">
+                                        @if (friend.AppUser.ProfilePicture != null)
+                                        {
+                                            <img src="data:image/jpeg;base64,
+                                            @Convert.ToBase64String(friend.AppUser.ProfilePicture.Picture)" alt="friend-contact" />
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-robot h2 pl-2"></i>
+                                        }
                                     </div>
                                     <p class="name-time">@friend.AppUser.UserName</p>
                                 </li> 

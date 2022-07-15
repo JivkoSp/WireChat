@@ -115,16 +115,31 @@ namespace Wire.Controllers
         {
             try
             {
-                Message Message = new Message
-                {
-                    Publisher = User.Identity.Name,
-                    Content = message,
-                    DateTime = DateTime.Now,
-                    ChatId = chatId
-                };
+                var user = await UserManager.GetUserAsync(User);
 
-                await UnitOfWork.MessageRepo.AddAsync(Message);
-                await UnitOfWork.SaveChangesAsync();
+                if(!UnitOfWork.AnonymUserRepo.isUserAnonymous(user.Id))
+                {
+                    var messageTimeToLive = UnitOfWork.MessageTimeToLiveRepo.FindMessage(user.Id);
+
+                    DateTime time = DateTime.Now.AddDays(1);
+
+                    if(messageTimeToLive != null)
+                    {
+                        time = DateTime.Now.AddHours(messageTimeToLive.LifeSpan);
+                    }
+
+                    Message Message = new Message
+                    {
+                        Publisher = User.Identity.Name,
+                        Content = message,
+                        DateTime = DateTime.Now,
+                        MessageLifeTime = time,
+                        ChatId = chatId
+                    };
+
+                    await UnitOfWork.MessageRepo.AddAsync(Message);
+                    await UnitOfWork.SaveChangesAsync();
+                }       
             }
             catch(Exception ex)
             {

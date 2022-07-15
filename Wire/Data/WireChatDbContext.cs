@@ -26,6 +26,9 @@ namespace Wire.Data
         public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<GroupPendingRequest> GroupPendingRequests { get; set; }
         public virtual DbSet<BannGroupMember> BannGroupMembers { get; set; }
+        public virtual DbSet<MessageTimeToLive> MessageTimeToLives { get; set; }
+        public virtual DbSet<AnonymUser> AnonymUsers { get; set; }
+        public virtual DbSet<ProfilePicture> ProfilePictures { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +37,12 @@ namespace Wire.Data
             modelBuilder.Entity<AppUser>(builder => {
 
                 builder.ToTable("AppUser");
+
+                builder.HasOne(prop => prop.ProfilePicture)
+                .WithMany(prop => prop.AppUsers)
+                .HasForeignKey(prop => prop.ProfilePictureId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_ProfilePicture_AppUsers");
             });
 
             modelBuilder.Entity<Chat>(builder => {
@@ -92,6 +101,10 @@ namespace Wire.Data
                 builder.Property(prop => prop.DateTime)
                     .HasColumnType("datetime2")
                     .IsRequired();
+
+                builder.Property(prop => prop.MessageLifeTime)
+                  .HasColumnType("datetime2")
+                  .IsRequired();
 
                 builder.HasOne(prop => prop.Chat)
                 .WithMany(prop => prop.Messages)
@@ -192,6 +205,40 @@ namespace Wire.Data
                 .HasForeignKey(prop => prop.ChatId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Chat_BannGroupMembers");
+            });
+
+            modelBuilder.Entity<MessageTimeToLive>(builder => {
+
+                builder.ToTable("MessageTimeToLive");
+
+                builder.HasKey(prop => prop.AppUserId);
+
+                builder.HasOne(prop => prop.AppUser)
+                 .WithOne(prop => prop.MessageTimeToLive)
+                 .HasForeignKey<MessageTimeToLive>(prop => prop.AppUserId)
+                 .OnDelete(DeleteBehavior.Cascade)
+                 .HasConstraintName("FK_AppUser_MessageTimeToLive");
+            });
+
+            modelBuilder.Entity<AnonymUser>(builder => {
+
+                builder.ToTable("AnonymUser");
+
+                builder.HasKey(prop => prop.AppUserId);
+
+                builder.HasOne(prop => prop.AppUser)
+                .WithOne(prop => prop.AnonymUser)
+                .HasForeignKey<AnonymUser>(prop => prop.AppUserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_AppUser_AnonymUser");
+            });
+
+            modelBuilder.Entity<ProfilePicture>(builder => {
+
+                builder.ToTable("ProfilePicture");
+
+                builder.Property(p => p.Picture)
+               .HasColumnType("image");
             });
         }
     }

@@ -10,5 +10,6 @@ namespace Wire.Data.Repository.Interfaces
     public interface IMessageRepo : IGenericRepo<Message>
     {
         List<Message> GetMessages(int chatId);
+        IEnumerable<Message> GetMessages();
     }
 }

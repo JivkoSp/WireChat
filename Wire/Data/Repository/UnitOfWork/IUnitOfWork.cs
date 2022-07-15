@@ -20,6 +20,9 @@ namespace Wire.Data.Repository.UnitOfWork
         IGroupPendingRequestRepo GroupPendingRequestRepo { get; }
         IGroupRepo GroupRepo { get; }
         IBannGroupMemberRepo BannGroupMemberRepo { get; }
+        IMessageTimeToLiveRepo MessageTimeToLiveRepo { get; }
+        IAnonymUserRepo AnonymUserRepo { get; }
+        IProfilePictureRepo ProfilePictureRepo { get; }
         Task SaveChangesAsync();
     }
 }

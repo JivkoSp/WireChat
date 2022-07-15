@@ -45,6 +45,10 @@ namespace Wire.Pages.SignInPage
                 {
                     return RedirectToAction("HomePage", "Home");
                 }
+                else if(result.RequiresTwoFactor)
+                {                  
+                    return RedirectToPage("/SignInPage/AuthorizeSecondFactor", new { RememberMe = RememberMe });
+                }
             }
 
             

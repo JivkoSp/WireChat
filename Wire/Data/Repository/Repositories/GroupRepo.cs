@@ -20,7 +20,7 @@ namespace Wire.Data.Repository.Repositories
         public IEnumerable<UserChat> GetGroupMembers(int chatId)
         {
             return WireChatDbContext.UserChats.Where(userChat => userChat.ChatId == chatId)
-                    .Include(u => u.AppUser);
+                    .Include(u => u.AppUser).Include(u => u.AppUser.ProfilePicture);
         }
     }
 }

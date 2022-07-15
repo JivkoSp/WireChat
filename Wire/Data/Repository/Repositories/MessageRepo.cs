@@ -20,5 +20,10 @@ namespace Wire.Data.Repository.Repositories
         {
             return WireChatDbContext.Messages.Where(m => m.ChatId == chatId).ToList();
         }
+
+        public IEnumerable<Message> GetMessages()
+        {
+            return WireChatDbContext.Messages;
+        }
     }
 }

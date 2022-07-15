@@ -7,7 +7,6 @@ namespace Wire.Models
 {
     public class Chat
     {
-
         public Chat()
         {
             UserChats = new HashSet<UserChat>();

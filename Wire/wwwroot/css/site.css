@@ -493,3 +493,20 @@ ul {
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+.profile-picture-grid{
+    display:grid;
+    grid-gap:0.5rem;
+    grid-template-columns: repeat(5, 7rem);
+    height:40vh;
+    overflow-y:auto;
+    background-color:rgb(27, 24, 24);
+}
+
+.profile-picture{
+    background-color:rgb(44, 39, 39);
+}
+
+.profile-picture:hover{
+    background-color:rgb(63, 57, 57);
+}

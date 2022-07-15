@@ -1,0 +1,255 @@
+﻿@model UserProfileViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p class="text-center mt-4 h3 border-bottom border-2 pb-2">Manage User Profile</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <a class="btn btn-dark col-xl-3 col-lg-3 m-1" data-bs-toggle="collapse"
+                       href="#PasswordOptions" role="button" aria-expanded="false" aria-controls="PasswordOptions">
+                        Password Options
+                    </a>
+                    <a class="btn btn-dark col-xl-3 col-lg-3 m-1" data-bs-toggle="collapse"
+                       href="#ProfileOptions" role="button" aria-expanded="false" aria-controls="ProfileOptions">
+                        Profile Options
+                    </a>
+                    <a class="btn btn-dark col-xl-3 col-lg-3 m-1" data-bs-toggle="collapse"
+                       href="#MessageOptions" role="button" aria-expanded="false" aria-controls="MessageOptions">
+                        Message Options
+                    </a>
+                    <a asp-controller="Home" asp-action="HomePage" class="btn btn-dark col-xl-3 col-lg-3 m-1">
+                        Back
+                    </a>
+                </div>
+            </nav>
+
+            <div class="collapse" id="PasswordOptions">
+                <form id="UserProfileForm" asp-controller="User" asp-action="UserProfile" data-ajax="true"
+                      data-ajax-complete="UserProfilePosted" method="post">
+
+                    <p class="text-center mt-4 h5 border-bottom border-2 pb-2">Password options</p>
+
+                    <div class=" text-center mt-5 h5">
+                        <label class="col-form-label">Two Factor Authentication</label>
+                        <select id="TwoFaAuthSelect" class="custom-select mt-1 col-xl-8 col-lg-8">
+                            <option value="Enable">Enable</option>
+                            <option value="Disable">Disable</option>
+                        </select>
+
+                        <input id="EnableTwoFaAuth" type="hidden" name="TwoFaAuth" value="false" />
+
+                        <div id="TwoFaAuthDisable" style="display:none">
+                            <input type="text" name="TwoFaCode" placeholder="Code to disable two factor auth"
+                                   class="form-control form-control m-auto mt-4 col-xl-6 col-lg-6 col-md-8 col-sm-8 col-8" />
+                        </div>
+
+                        <select id="TwoFaAuth-Select" style="display:none;" name="TwoFaType"
+                                class="custom-select mt-2 m-auto col-xl-8 col-lg-8">
+                            <option value="QRCode">QR Code</option>
+                            <option value="Email">Email</option>
+                        </select>
+                    </div>
+
+                    <div id="QRCode-Container" style="display:none;" class="mt-2 text-center">
+                        <img src="@ViewBag.BarcodeImageUrl" />
+                        <p style="font-size:90%;"> Setup code: @ViewBag.SetupCode</p>
+                        <label class="form-label">Input security code</label>
+                        <input type="text" name="TwoFaCode"
+                               placeholder="Your code" class="form-control form-control m-auto col-xl-4 col-lg-4 col-md-6 col-sm-8 col-8" />
+                    </div>
+
+                    <div class="text-center mt-2 h5">
+                        <label class="col-form-label">Change password</label>
+                        <input type="checkbox" name="ChangePass" value="true">
+                        <input type="hidden" name="ChangePass" value="false" />
+                    </div>
+
+                    <div id="UserProfilePosted-Container" style="display:none;" class="text-center mt-3">
+                        <p id="UserProfilePosted" class="h5 text-success"></p>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <button type="submit" style="width:10em;" class="btn bg-dark text-white mr-1 mb-2">Apply Changes</button>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="collapse" id="ProfileOptions">
+
+                    <p class="text-center mt-4 h5 border-bottom border-2 pb-2">Profile options</p>
+
+                    <label class="col-form-label">Profile pictures</label>
+                    <div class="profile-picture-grid">
+
+                        @foreach (var picture in Model.ProfilePictures)
+                        {
+                            <div class="profile-picture">
+                                <input type="hidden" value="@picture.ProfilePictureId"/>
+                                <img src="data:image/jpeg;base64,@Convert.ToBase64String(picture.Picture)" class="img-fluid" />
+                            </div>
+                        }
+
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <button id="UserImgProfileSubmit" style="width:10em;" 
+                                class="btn bg-dark text-white mr-1 mb-2">Apply Changes</button>
+                    </div>
+
+            </div>
+
+            <div class="collapse" id="MessageOptions">
+
+                <form asp-controller="User" asp-action="MessageProfile" data-ajax="true"
+                      data-ajax-complete="MessageProfilePosted" method="post">
+
+                    <input type="hidden" name="UserId" value="@Model.AppUser.Id" />
+                    <p class="text-center mt-4 h5 border-bottom border-2 pb-2">Message options</p>
+
+                    <label for="DeletePeriod" class="col-form-label mt-5">Message Deletion Period</label>
+                    <select id="DeletePeriod" name="MessageTimeToLife" class="custom-select mt-1 col-xl-5 col-lg-5">
+                        <option value="12">12 hour's</option>
+                        <option value="6">6 hour's</option>
+                        <option value="3">3 hour's</option>
+                    </select>
+
+                    <label for="DontRemember" class="col-form-label mt-4">Don't remember message's from me</label>
+                    <input id="DontRemember" type="checkbox" name="DontRemember" value="true" />
+                    <input type="hidden" name="DontRemember" value="false" />
+
+                    <div id="MessageProfilePosted-Container" style="display:none;" class="text-center mt-3">
+                        <p id="MessageProfilePosted" class="h5 text-success"></p>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <button type="submit" style="width:10em;" class="btn bg-dark text-white mr-1 mb-2">Apply Changes</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+         <div class="col col-xl-4 col-lg-4 col-md-6 col-sm-6 col-6 
+              m-md-auto m-sm-auto m-auto mt-5">
+             <div id="ProfilePicture" class="w-50 mt-5 m-auto">
+                 <input type="hidden" />
+
+                 @if (Model.AppUser.ProfilePicture != null)
+                 {
+                     <img src="data:image/jpeg;base64,
+                          @Convert.ToBase64String(Model.AppUser.ProfilePicture.Picture)" 
+                          style="background-color:rgb(67, 58, 58);" class="img-fluid shadow rounded" />
+                 }
+                 else
+                 {
+                     <img src="~/HomeImage/SignUp/pexels-frank-cone-2230796.jpg" name="profileImg"
+                          class="img-fluid " />
+                 }
+
+                 <p class="text-center">@Model.AppUser.UserName</p>
+             </div>         
+         </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $("document").ready(() => {
+
+        UserProfilePosted = function (xhr) {
+
+            $("#UserProfilePosted-Container").css("display", "block");
+            document.getElementById("UserProfilePosted").textContent = xhr.responseJSON;
+        };
+
+        $("#TwoFaAuthSelect").click(() => {
+
+            if (document.getElementById("TwoFaAuthSelect").value == "Enable") {
+
+                document.getElementById("EnableTwoFaAuth").value = "true";
+                $("#TwoFaAuth-Select").css("display", "block");
+                $("#TwoFaAuthDisable").css("display", "none");
+
+                let form = document.getElementById("UserProfileForm");
+                form.setAttribute("action", "/User/UserProfile");
+            }
+            else {
+
+                document.getElementById("EnableTwoFaAuth").value = "false";
+                $("#TwoFaAuth-Select").css("display", "none");
+                $("#QRCode-Container").css("display", "none");
+                $("#TwoFaAuthDisable").css("display", "block");
+
+                let form = document.getElementById("UserProfileForm");
+                form.setAttribute("action", "/User/DisableTwoFaAuth");
+            }
+        });
+
+        $("#TwoFaAuth-Select").click(() => {
+
+            if (document.getElementById("TwoFaAuth-Select").value == "QRCode") {
+
+                $("#QRCode-Container").css("display", "block");
+            }
+        });
+
+
+        MessageProfilePosted = function (xhr) {
+
+            $("#MessageProfilePosted-Container").css("display", "block");
+            document.getElementById("MessageProfilePosted").textContent = xhr.responseJSON;
+        };
+
+        var profilePictures = document.getElementsByClassName("profile-picture");
+
+        for (let i = 0; i < profilePictures.length; i++) {
+
+            profilePictures[i].addEventListener('click', () => {
+
+                const div = document.getElementById("ProfilePicture");
+                div.removeChild(div.getElementsByTagName('img')[0]);
+
+                const inputElement = profilePictures[i].getElementsByTagName('input');
+                div.getElementsByTagName('input')[0].value = inputElement[0].value;
+
+                const imgElement = profilePictures[i].getElementsByTagName('img');
+                const cloneImg = imgElement[0].cloneNode(true);
+                cloneImg.style.backgroundColor = "rgb(67, 58, 58)";
+                cloneImg.setAttribute("class", "img-fluid shadow rounded");
+
+                div.appendChild(cloneImg);
+            });
+        }
+
+        $("#UserImgProfileSubmit").click(() => {
+
+            const div = document.getElementById("ProfilePicture");
+            const input = div.getElementsByTagName('input')[0];
+
+            $.ajax({
+                type: 'POST',
+                url: '/User/UserImgProfile',
+                data: {
+                    "imgId": input.value
+                },
+               failure: function (response) {
+                   console.log("Fail", response);
+               },
+               error: function (response) {
+                  console.log("Error", response);
+               }
+            });
+        });
+    });
+
+</script>

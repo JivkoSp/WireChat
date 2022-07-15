@@ -25,6 +25,9 @@ namespace Wire.ExtensionMethods
             services.AddScoped<IGroupPendingRequestRepo, GroupPendingRequestRepo>();
             services.AddScoped<IGroupRepo, GroupRepo>();
             services.AddScoped<IBannGroupMemberRepo, BannGroupMemberRepo>();
+            services.AddScoped<IMessageTimeToLiveRepo, MessageTimeToLiveRepo>();
+            services.AddScoped<IAnonymUserRepo, AnonymUserRepo>();
+            services.AddScoped<IProfilePictureRepo, ProfilePictureRepo>();
         }
     }
 }

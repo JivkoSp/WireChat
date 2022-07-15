@@ -150,6 +150,16 @@ namespace Wire.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Wire.Models.AnonymUser", b =>
+                {
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AppUserId");
+
+                    b.ToTable("AnonymUser");
+                });
+
             modelBuilder.Entity("Wire.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -192,6 +202,9 @@ namespace Wire.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("ProfilePictureId")
+                        .HasColumnType("int");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -211,6 +224,8 @@ namespace Wire.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("ProfilePictureId");
 
                     b.ToTable("AppUser");
                 });
@@ -389,6 +404,9 @@ namespace Wire.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("MessageLifeTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Publisher")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -399,6 +417,19 @@ namespace Wire.Migrations
                     b.HasIndex("ChatId");
 
                     b.ToTable("Message");
+                });
+
+            modelBuilder.Entity("Wire.Models.MessageTimeToLive", b =>
+                {
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("LifeSpan")
+                        .HasColumnType("int");
+
+                    b.HasKey("AppUserId");
+
+                    b.ToTable("MessageTimeToLive");
                 });
 
             modelBuilder.Entity("Wire.Models.PendingRequest", b =>
@@ -427,6 +458,21 @@ namespace Wire.Migrations
                     b.HasIndex("ReceiverId");
 
                     b.ToTable("PendingRequest");
+                });
+
+            modelBuilder.Entity("Wire.Models.ProfilePicture", b =>
+                {
+                    b.Property<int>("ProfilePictureId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("Picture")
+                        .HasColumnType("image");
+
+                    b.HasKey("ProfilePictureId");
+
+                    b.ToTable("ProfilePicture");
                 });
 
             modelBuilder.Entity("Wire.Models.UserChat", b =>
@@ -496,6 +542,29 @@ namespace Wire.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Wire.Models.AnonymUser", b =>
+                {
+                    b.HasOne("Wire.Models.AppUser", "AppUser")
+                        .WithOne("AnonymUser")
+                        .HasForeignKey("Wire.Models.AnonymUser", "AppUserId")
+                        .HasConstraintName("FK_AppUser_AnonymUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("Wire.Models.AppUser", b =>
+                {
+                    b.HasOne("Wire.Models.ProfilePicture", "ProfilePicture")
+                        .WithMany("AppUsers")
+                        .HasForeignKey("ProfilePictureId")
+                        .HasConstraintName("FK_ProfilePicture_AppUsers")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ProfilePicture");
                 });
 
             modelBuilder.Entity("Wire.Models.BannGroupMember", b =>
@@ -599,6 +668,18 @@ namespace Wire.Migrations
                     b.Navigation("Chat");
                 });
 
+            modelBuilder.Entity("Wire.Models.MessageTimeToLive", b =>
+                {
+                    b.HasOne("Wire.Models.AppUser", "AppUser")
+                        .WithOne("MessageTimeToLive")
+                        .HasForeignKey("Wire.Models.MessageTimeToLive", "AppUserId")
+                        .HasConstraintName("FK_AppUser_MessageTimeToLive")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("Wire.Models.PendingRequest", b =>
                 {
                     b.HasOne("Wire.Models.AppUser", "AppUser")
@@ -633,7 +714,11 @@ namespace Wire.Migrations
 
             modelBuilder.Entity("Wire.Models.AppUser", b =>
                 {
+                    b.Navigation("AnonymUser");
+
                     b.Navigation("Friends");
+
+                    b.Navigation("MessageTimeToLive");
 
                     b.Navigation("PendingRequests");
 
@@ -668,6 +753,11 @@ namespace Wire.Migrations
             modelBuilder.Entity("Wire.Models.PendingRequest", b =>
                 {
                     b.Navigation("GroupPendingRequest");
+                });
+
+            modelBuilder.Entity("Wire.Models.ProfilePicture", b =>
+                {
+                    b.Navigation("AppUsers");
                 });
 #pragma warning restore 612, 618
         }

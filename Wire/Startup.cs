@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NETCore.MailKit.Extensions;
+using NETCore.MailKit.Infrastructure.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,7 @@ using Wire.AutomapperProfiles;
 using Wire.Data;
 using Wire.ExtensionMethods;
 using Wire.Hubs;
+using Wire.Middlewares;
 using Wire.Models;
 
 namespace Wire
@@ -47,8 +50,9 @@ namespace Wire
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.SignIn.RequireConfirmedAccount = true;
+                opt.SignIn.RequireConfirmedEmail = true;
 
-            }).AddEntityFrameworkStores<WireChatDbContext>();
+            }).AddEntityFrameworkStores<WireChatDbContext>().AddDefaultTokenProviders();
 
             services.ConfigureApplicationCookie(opt => {
 
@@ -56,6 +60,10 @@ namespace Wire
                 opt.LoginPath = "/SignInPage/SignIn";
                 opt.SlidingExpiration = true;
                 opt.ExpireTimeSpan = TimeSpan.FromMinutes(120);
+            });
+
+            services.AddMailKit(options => {
+                options.UseMailKit(Configuration.GetSection("Email").Get<MailKitOptions>());
             });
 
             services.AddRepository();
@@ -85,6 +93,7 @@ namespace Wire
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();
+            app.UseMiddleware<DeleteMessagesMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

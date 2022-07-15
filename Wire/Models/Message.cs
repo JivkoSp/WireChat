@@ -11,6 +11,7 @@ namespace Wire.Models
         public string Publisher { get; set; }
         public string Content { get; set; }
         public DateTime DateTime { get; set; }
+        public DateTime MessageLifeTime { get; set; }
 
         public int ChatId { get; set; }
         public virtual Chat Chat { get; set; }

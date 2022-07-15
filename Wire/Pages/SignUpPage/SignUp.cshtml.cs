@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using NETCore.MailKit.Core;
 using Wire.Models;
 
 namespace Wire.Pages.SignUpPage
@@ -51,15 +53,21 @@ namespace Wire.Pages.SignUpPage
                 AppUser user = new AppUser
                 {
                     UserName = UserName,
-                    Email = Email,
-                    EmailConfirmed = true
+                    Email = Email
                 };
 
                 IdentityResult result = await UserManager.CreateAsync(user, Password);
 
                 if (result.Succeeded)
                 {
-                    return RedirectToPage("/SignInPage/SignIn");
+                    try
+                    {
+                        return RedirectToPage("/EmailVerificationPage/EmailVerification", new { UserEmail = user.Email });
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                 }
             }
 

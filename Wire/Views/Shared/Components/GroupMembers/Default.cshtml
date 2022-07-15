@@ -10,7 +10,15 @@
             {
                 <li class="person" style="border-color:rgb(51, 45, 45);">
                     <a asp-controller="Chat" asp-action="ChatRoom" asp-route-ChatId="@friend.ChatId" class="user">
-                        <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="friend-contact">
+                        @if (friend.AppUser.ProfilePicture != null)
+                        {
+                            <img src="data:image/jpeg;base64,
+                                 @Convert.ToBase64String(friend.AppUser.ProfilePicture.Picture)" alt="friend-contact" />
+                        }
+                        else
+                        {
+                            <i class="bi bi-robot h2 pl-2"></i>
+                        }
                         <span class="status busy bg-warning"></span>
                     </a>
                     <p class="name-time">
