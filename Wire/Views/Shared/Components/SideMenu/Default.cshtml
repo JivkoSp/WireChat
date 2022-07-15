@@ -18,7 +18,7 @@
             @foreach (var friend in Model.Contacts)
             {
                 <li class="person">
-                    <a asp-controller="Chat" asp-action="ChatRoom" asp-route-ChatId="@friend.ChatId" class="user">
+                    <a id="Contact-@friend.AppUser.Id" asp-controller="Chat" asp-action="ChatRoom" asp-route-ChatId="@friend.ChatId" class="user">
 
                         @if (friend.AppUser.ProfilePicture != null)
                         {
@@ -28,8 +28,7 @@
                         else
                         {
                             <i class="bi bi-robot h2 pl-2"></i>
-                        }
-                        <span class="status busy bg-warning"></span>
+                        }                     
                     </a>
                     <p class="name-time">
                         <span class="name">@friend.AppUser.UserName</span>

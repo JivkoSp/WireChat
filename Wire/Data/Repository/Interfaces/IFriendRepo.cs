@@ -10,5 +10,6 @@ namespace Wire.Data.Repository.Interfaces
     public interface IFriendRepo : IGenericRepo<Friend>
     {
         bool isFriend(string senderId, string receiverId);
+        IEnumerable<Friend> GetFriends(string userId);
     }
 }

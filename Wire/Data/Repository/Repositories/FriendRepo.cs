@@ -22,5 +22,11 @@ namespace Wire.Data.Repository.Repositories
             return WireChatDbContext.Friends.Where(u => u.SenderId == senderId)
                     .FirstOrDefault(f => f.ReceiverId == receiverId) != null ? true : false;
         }
+
+        public IEnumerable<Friend> GetFriends(string userId)
+        {
+            return WireChatDbContext.Friends.Where(u => u.SenderId == userId)
+                    .Include(u => u.AppUser);
+        }
     }
 }

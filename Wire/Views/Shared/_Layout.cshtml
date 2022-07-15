@@ -14,27 +14,31 @@
     <header id="HomePageHeader">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-1 pl-lg-0 pl-md-0 text-lg-left text-center bg-dark">
+                <div class="col-md-1 pl-lg-0 pl-md-0 text-center bg-dark">
                     <img src="~/HomeImage/siteIcon/Logo 500x500 px(2).png" class="img-fluid rounded p-1 pt-2" style="width: 50px;" alt="avatar" />
                 </div>
                 <button id="Groups" class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
                     Groups
+                    <i class="bi bi-people-fill"></i>
                 </button>
-                <div class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
+                <button class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
+                    <i class="bi bi-lightbulb-fill"></i>
                     Online
-                </div>
-                <div class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
-                    All
-                </div>
-                <a asp-controller="Home" asp-action="PendingRequests" 
+                    <span id="OnlineUsers" class="text-info pl-1"></span>
+                </button>
+                <a asp-controller="Home" asp-action="PendingRequests"
                    class="col-md text-center text-white text-decoration-none bg-dark p-3 pt-4 border border-right border-secondary">
+                    <i class="bi bi-envelope-exclamation-fill"></i>
                     Pending
+                    <vc:pending-requests />
                 </a>
-                <div class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
+                <button class="col-md text-center text-white bg-dark p-3 pt-4 border-right border-secondary">
+                   <i class="bi bi-shield-fill-exclamation"></i>
                     Blocked
-                </div>
+                </button>
                 <button id="AddFriend" class="col-md text-center text-info font-weight-bold border-secondary bg-dark p-3 pt-4">
                     Add Friend
+                    <i class="bi bi-person-plus-fill"></i>
                 </button>
             </div>
         </div>
@@ -77,6 +81,15 @@
 
             $("document").ready(() => {
 
+                function removeElement(id) {
+                    var elem = document.getElementById(id);
+
+                    if (elem != null) {
+                        elem.parentNode.removeChild(elem);
+                    }   
+                }
+
+
                 $("#AddFriend").click(() => {
 
                     $("#AddFriendWindow-Container").css("display", "block");
@@ -105,6 +118,88 @@
                         $("#search").val(i.item.val);
                     }
                 });
+
+                var connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/chatHub").build();
+
+                connection.start().then(() => {
+
+                    connection.on("OnConnectedContactsAsync", (connectedUsers) => {
+
+                        const userIds = Object.keys(connectedUsers);
+                        let online = 1;
+
+                        for (let i = 0; i < userIds.length; i++) {
+
+                            const element = document.getElementById(`Contact-${userIds[i]}`);
+                            const element2 = document.getElementById(`Group-Contact-${userIds[i]}`);
+
+                            if (element != null && connectedUsers[userIds[i]] != null) {
+                                online += 1;
+
+                                if (document.getElementById(`Status-${userIds[i]}`) == null) {
+                                    element.innerHTML += `<span id=Status-${userIds[i]} class="status busy bg-warning"></span>`;
+                                }
+                            }
+
+                            if (element2 != null && connectedUsers[userIds[i]] != null) {
+
+                                if (document.getElementById(`Group-Status-${userIds[i]}`) == null) {
+                                    element2.innerHTML += `<span id=Group-Status-${userIds[i]} class="status busy bg-warning"></span>`;
+                                }
+                            }
+                        }
+
+                        document.getElementById("OnlineUsers").textContent = online;
+                    });
+
+                    connection.on("OnDisconnectedAsync", (connectedUsers) => {
+
+                        const userIds = Object.keys(connectedUsers);
+                        let online = 1;
+
+                        for (let i = 0; i < userIds.length; i++) {
+
+                            const element = document.getElementById(`Contact-${userIds[i]}`);
+                            const element2 = document.getElementById(`Group-Contact-${userIds[i]}`);
+
+                            if (element != null && connectedUsers[userIds[i]] == null) {
+
+                                removeElement(`Status-${userIds[i]}`);
+                            }
+                            else if (element != null) {
+                                online += 1;
+                            }
+
+                            if (element2 != null && connectedUsers[userIds[i]] == null) {
+
+                                removeElement(`Group-Status-${userIds[i]}`);
+                            }
+                        }
+
+                        document.getElementById("OnlineUsers").textContent = online;
+                    });
+
+                }).catch(function (err) {
+                    return console.error(err.toString());
+                });
+
+                var connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/notificationHub").build();
+
+                connection.start().then(() => {
+
+                    connection.on("PendingRequestReceived", () => {
+
+                        let requests = Number(document.getElementById("PendingRequests").textContent);
+                        requests += 1;
+                        document.getElementById("PendingRequests").textContent = requests;
+                    });
+
+                }).catch(function (err) {
+                    return console.error(err.toString());
+                });
+
             });
         </script>
     </main>
