@@ -62,7 +62,12 @@ I have used AutoMapper api to mapp model object to dto object for the reasons be
 For some models i have used [name]ViewModel convention to implify that the particular model will be used 
 in readonly fashion by the view, besides that it has the same purpose as dto.
 
+3.Motivation
 
+The thing that motivated me the most about creating this app was that i wanthed to understant how the message applications work in general. 
+In that process i encoutered with different thechics for "instant" messaging and in particular webSockets. 
+And then i wanted to create somethik with that, something that will be cool, but also teach me about this protocols in practise. 
+The other motivation was that i wanted to be better in MVC and what else than make another project ;)
 
 
 
