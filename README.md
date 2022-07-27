@@ -32,6 +32,37 @@ https://user-images.githubusercontent.com/97282923/181253929-b0cc4002-96a2-49b1-
 Block/unblock friends:
 https://user-images.githubusercontent.com/97282923/181256345-754f677f-d5f9-4a22-9475-4529cbfe0bf4.mp4
 
+2. How the app works
+
+DataBase:
+For data storage the chat uses Sql Server Db together with Entity Framework for working with the data models.
+-Design Patterns:
+I have implemented the repository design patter to work with the data models so that the sql queries will not be
+all over the place and be contained in particular repo class (each model have its own repo class). That also allows
+me to reuse particular query and not have duplication of code.
+
+Messaging:
+For the messaging part i've used SignalR api. SignalR uses 3 transport types for messaging:
+-WebSockets
+-Server side events
+-Long pulling
+
+I have choosen it becouse the connection will have fallback to the other's transports and not be shut down 
+if for excample the server or client have problem with WebSocket.
+It also allows for disconnected clients to have some time to re-connect back and to be easly indentified when the connection is closed.
+
+Model objects:
+I have used AutoMapper api to mapp model object to dto object for the reasons below:
+
+1. No dublication for every mapping
+2. In more complex situations where one type have some navigation properties set but not necesseraly all
+   makes mapping to dto easy becouse AutoMapper ignores NullRef exceptions by default
+
+For some models i have used [name]ViewModel convention to implify that the particular model will be used 
+in readonly fashion by the view, besides that it has the same purpose as dto.
+
+
+
 
 
 
