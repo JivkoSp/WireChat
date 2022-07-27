@@ -1,4 +1,5 @@
 # WireChat
+![Logo 500x500 px(1)](https://user-images.githubusercontent.com/97282923/181274131-ba383de9-e9ef-4da0-9ab4-043d496c2497.png)
 
 WireChat is messaging app that is inspired from Discord and Telegram.
 The app has two factor authentication feature that works with QrCode(this is more secure than sms for excample, where the youser gets the auth code throuth sms),
