@@ -1,7 +1,7 @@
 # WireChat
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/97282923/181274131-ba383de9-e9ef-4da0-9ab4-043d496c2497.png" alt="Logo" width="100" height="500">
+  <img src="https://user-images.githubusercontent.com/97282923/181274131-ba383de9-e9ef-4da0-9ab4-043d496c2497.png" alt="Logo" width="500">
 </p>
 
 ---
