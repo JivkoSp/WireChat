@@ -1,6 +1,8 @@
 # WireChat
 
-![Logo 100x100 px](https://user-images.githubusercontent.com/97282923/181274131-ba383de9-e9ef-4da0-9ab4-043d496c2497.png)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/97282923/181274131-ba383de9-e9ef-4da0-9ab4-043d496c2497.png" alt="Logo" width="100" height="100">
+</p>
 
 ---
 
@@ -18,19 +20,44 @@ WireChat is a messaging app inspired by Discord and Telegram. The app features t
 ## 1. How the app looks
 
 ### LogIn/SignUp page:
-![LogIn/SignUp page](https://user-images.githubusercontent.com/97282923/181248953-7a14d2e3-c223-4f32-9bf3-8be83bd8c776.mp4)
+<p align="center">
+  <video width="100%" controls>
+    <source src="https://user-images.githubusercontent.com/97282923/181248953-7a14d2e3-c223-4f32-9bf3-8be83bd8c776.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</p>
 
 ### SignUp:
-![SignUp](https://user-images.githubusercontent.com/97282923/181251218-10552b50-5cbb-473e-8e2e-2b35949ca0e0.mp4)
+<p align="center">
+  <video width="100%" controls>
+    <source src="https://user-images.githubusercontent.com/97282923/181251218-10552b50-5cbb-473e-8e2e-2b35949ca0e0.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</p>
 
 ### Add friend and profile options:
-![Add friend and profile options](https://user-images.githubusercontent.com/97282923/181248914-334689c1-2911-4376-a974-41e92f344670.mp4)
+<p align="center">
+  <video width="100%" controls>
+    <source src="https://user-images.githubusercontent.com/97282923/181248914-334689c1-2911-4376-a974-41e92f344670.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</p>
 
 ### One-to-one chat, group chat and group activity:
-![One-to-one chat, group chat and group activity](https://user-images.githubusercontent.com/97282923/181253929-b0cc4002-96a2-49b1-b7aa-69b54b11cef7.mp4)
+<p align="center">
+  <video width="100%" controls>
+    <source src="https://user-images.githubusercontent.com/97282923/181253929-b0cc4002-96a2-49b1-b7aa-69b54b11cef7.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</p>
 
 ### Block/unblock friends:
-![Block/unblock friends](https://user-images.githubusercontent.com/97282923/181256345-754f677f-d5f9-4a22-9475-4529cbfe0bf4.mp4)
+<p align="center">
+  <video width="100%" controls>
+    <source src="https://user-images.githubusercontent.com/97282923/181256345-754f677f-d5f9-4a22-9475-4529cbfe0bf4.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</p>
 
 ## 2. How the app works
 
